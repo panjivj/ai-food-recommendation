@@ -1,0 +1,7 @@
+{
+  "name": "AI Food Recommendation",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
