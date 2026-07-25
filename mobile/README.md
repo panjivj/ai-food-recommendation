@@ -3,6 +3,11 @@
 Frontend Ionic Vue untuk demo antarmuka dan kebutuhan screenshot laporan tugas
 akhir. Versi ini menggunakan data dummy lokal dan belum terhubung ke backend.
 
+## Screenshot aplikasi
+
+Galeri lengkap tampilan aplikasi, status pengembangan, dan dokumentasi proyek
+tersedia pada [README utama](../README.md#tampilan-aplikasi).
+
 ## Menjalankan aplikasi
 
 ```bash
