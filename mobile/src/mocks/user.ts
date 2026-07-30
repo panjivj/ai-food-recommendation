@@ -13,4 +13,5 @@ export const demoUser: DemoUser = {
   healthConditions: [],
   allergies: ['Kacang tanah'],
   dislikedFoods: ['Jeroan'],
+  foodPreferences: ['Makanan rumahan'],
 }

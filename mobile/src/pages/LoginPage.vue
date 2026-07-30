@@ -11,18 +11,23 @@ import {
   mailOutline,
   shieldCheckmarkOutline,
 } from 'ionicons/icons'
-import { demoUser } from '@/mocks/user'
+import { userFacingApiError } from '@/services/api/client'
+import { useAuthStore } from '@/stores/auth'
+import { useProfileStore } from '@/stores/profile'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const profileStore = useProfileStore()
 
-const email = ref(demoUser.email)
-const password = ref('Demo1234')
+const email = ref('')
+const password = ref('')
 const rememberMe = ref(true)
 const showPassword = ref(false)
 const errorMessage = ref('')
 const toastOpen = ref(false)
+const submitting = ref(false)
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   errorMessage.value = ''
 
   if (!email.value.trim() || !password.value.trim()) {
@@ -30,7 +35,21 @@ const handleSubmit = () => {
     return
   }
 
-  router.replace('/app/home')
+  submitting.value = true
+
+  try {
+    await authStore.login(email.value, password.value, rememberMe.value)
+    profileStore.reset()
+    const profile = await profileStore.fetch()
+    await router.replace(profile ? '/app/home' : '/profile/setup')
+  } catch (error) {
+    errorMessage.value = userFacingApiError(
+      error,
+      'Login gagal. Silakan coba kembali.',
+    )
+  } finally {
+    submitting.value = false
+  }
 }
 
 const showForgotPasswordInfo = () => {
@@ -52,7 +71,7 @@ const showForgotPasswordInfo = () => {
           </a>
           <span class="demo-badge">
             <span aria-hidden="true" />
-            Demo UI
+            Terhubung API
           </span>
         </header>
 
@@ -71,8 +90,8 @@ const showForgotPasswordInfo = () => {
               <ion-icon aria-hidden="true" :icon="checkmarkCircle" />
             </span>
             <div>
-              <strong>Akun demo siap digunakan</strong>
-              <small>Data telah diisi untuk kebutuhan presentasi.</small>
+              <strong>Masuk dengan akunmu</strong>
+              <small>Gunakan email dan kata sandi yang telah didaftarkan.</small>
             </div>
           </div>
 
@@ -142,15 +161,20 @@ const showForgotPasswordInfo = () => {
             </button>
           </div>
 
-          <button class="login-button" type="submit">
-            Masuk
+          <button
+            class="login-button"
+            type="submit"
+            :disabled="submitting"
+          >
+            {{ submitting ? 'Memverifikasi...' : 'Masuk' }}
             <ion-icon aria-hidden="true" :icon="arrowForward" />
           </button>
 
           <div class="security-note">
             <ion-icon aria-hidden="true" :icon="shieldCheckmarkOutline" />
             <span>
-              Ini adalah simulasi login. Tidak ada data yang dikirim ke server.
+              Kredensial diverifikasi oleh backend dan password tidak disimpan
+              di aplikasi.
             </span>
           </div>
         </form>

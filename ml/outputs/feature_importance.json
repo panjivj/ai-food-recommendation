@@ -1,0 +1,82 @@
+{
+  "generated_at_utc": "2026-07-30T03:14:24.447451+00:00",
+  "method": {
+    "name": "Decision Tree impurity-based feature importance",
+    "scikit_learn_attribute": "feature_importances_",
+    "definition": "Normalized total reduction of the split criterion (mean decrease in impurity) contributed by each feature.",
+    "data_access": "Extracted from the frozen fitted model; held-out test data was not loaded or scored.",
+    "limitations": [
+      "Importance menjelaskan perilaku model yang telah di-fit, bukan hubungan sebab-akibat dengan kelas waktu makan.",
+      "Fitur yang berkorelasi dapat saling membagi, menggantikan, atau mendistorsi importance yang terlihat.",
+      "Impurity-based importance tidak menunjukkan apakah suatu fitur menaikkan atau menurunkan probabilitas kelas."
+    ]
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "scikit_learn": "1.9.0",
+    "joblib": "1.5.3",
+    "matplotlib": "3.11.1",
+    "seaborn": "0.13.2"
+  },
+  "input": {
+    "model_artifact": "ml/artifacts/tuned_decision_tree.joblib",
+    "model_artifact_sha256": "6cb0c572d29d43ac5ee5702efa444a928409dc1fedbfc1942102403de0d9b474"
+  },
+  "importance_sum": 1.0,
+  "ranking": [
+    {
+      "rank": 1,
+      "feature": "serving_size_g",
+      "importance": 0.9401090779,
+      "importance_percent": 94.0109077898
+    },
+    {
+      "rank": 2,
+      "feature": "energy_kcal",
+      "importance": 0.0214057021,
+      "importance_percent": 2.1405702093
+    },
+    {
+      "rank": 3,
+      "feature": "carbohydrate_g",
+      "importance": 0.0129263864,
+      "importance_percent": 1.292638639
+    },
+    {
+      "rank": 4,
+      "feature": "fiber_g",
+      "importance": 0.0088186583,
+      "importance_percent": 0.8818658308
+    },
+    {
+      "rank": 5,
+      "feature": "fat_g",
+      "importance": 0.0073512701,
+      "importance_percent": 0.7351270125
+    },
+    {
+      "rank": 6,
+      "feature": "protein_g",
+      "importance": 0.0056585447,
+      "importance_percent": 0.5658544673
+    },
+    {
+      "rank": 7,
+      "feature": "sodium_mg",
+      "importance": 0.0037303605,
+      "importance_percent": 0.3730360513
+    }
+  ],
+  "outputs": {
+    "importance_csv": {
+      "path": "ml/outputs/feature_importance.csv",
+      "sha256": "4b97f98b5f6da70cafee2a1cce24ab8225244dcf5213b95a436c46b7ced9e98c"
+    },
+    "figure": {
+      "path": "ml/outputs/feature_importance.png",
+      "sha256": "cb821083a1eb283144a0b812321a63dcf9d191d4af7ec295e17afacc1ce666c7"
+    }
+  }
+}

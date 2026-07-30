@@ -6,6 +6,11 @@ dist/
 www/
 coverage/
 .nyc_output/
+mobile/tests/e2e/screenshots/
+mobile/tests/e2e/videos/
+
+# Backend runtime data
+backend/storage/
 
 # Ionic and Cordova generated files
 .ionic/
@@ -32,6 +37,8 @@ pnpm-debug.log*
 .cache/
 .tmp/
 tmp/
+__pycache__/
+*.py[cod]
 *.tmp
 *.tmp.*
 *.sw?
@@ -58,4 +65,7 @@ UserInterfaceState.xcuserstate
 *.xcuserstate
 
 laporan/*.pdf
-laporan/prompt-draft.md
+laporan/*.md
+!laporan/draft-laporan.md
+!laporan/lampiran-A.md
+!laporan/lampiran-B.md

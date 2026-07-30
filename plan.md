@@ -8,10 +8,10 @@ Develop a simple **AI-powered Food Recommendation System** as a cross-platform m
 
 The application helps users choose daily meals based on their body condition using a lightweight **Hybrid Recommendation Engine**.
 
-The current project priority is to produce a **UI demo/prototype** for final
-project report documentation. The application pages and their important states
-will be implemented using **dummy data** so they can be presented and captured
-as screenshots before the backend is built.
+The project started as a **UI demo/prototype** for final-project documentation.
+It is now progressing through the integrated MVP: authentication and user
+profiles use the real backend, while food recommendation screens retain
+structured dummy data until the menu domain and recommendation engine are ready.
 
 The application **does NOT provide medical diagnosis** and should only be positioned as an educational recommendation tool.
 
@@ -19,23 +19,42 @@ The application **does NOT provide medical diagnosis** and should only be positi
 
 # Important Development Note
 
-> **Current active phase: Demo UI only.**
+> **Current active phase: Phase 2 integrated MVP.**
 >
-> Until the demo and report screenshots are complete, development must focus on
-> the frontend appearance, navigation, page states, and realistic dummy data.
-> A complete backend, real authentication, database connection, recommendation
-> engine, OpenAI integration, and complete frontend-to-backend integration are
-> deliberately postponed to the next phase.
+> The UI demo remains available for report documentation. Backend foundation
+> work has started with Express, TypeScript, SQLite migrations, shared HTTP
+> middleware, a health endpoint, and email/password authentication.
+> User-profile persistence and API endpoints are also implemented. Registration,
+> login, session restoration, profile setup, and profile editing in Ionic are
+> connected to those endpoints. The TKPI food catalog schema, importer, and
+> 14 approved persistent pilot menus are now available. The 11 rejected pilot
+> menus have been removed from the active catalog.
+> Batch 2 through Batch 11 each add 60 unique approved menus, bringing the
+> catalog to 614 menus, all approved. The minimum target of 600 approved menus
+> has been exceeded by 14 menus.
+> A read-only approved-menu API now provides pagination, name search, meal-type
+> and calorie filters, plus complete menu details from the TKPI-backed catalog.
+> An authenticated calorie-needs API calculates transparent Mifflin-St Jeor
+> BMR, activity-adjusted TDEE, goal adjustment, and per-meal calorie targets
+> from the latest user profile.
+> A deterministic rule-based recommendation engine now selects four unique
+> daily menus using calorie fit, hard allergy/dislike filters, preference
+> matching, and an explainable score breakdown.
+> Database-level normalized-name,
+> weighted-component, and ingredient-set signatures prevent duplicate menus.
+> Ionic recommendation, detail menu, persistent replacement, and recommendation
+> history APIs and persistent menu feedback are available. Feedback-aware
+> scoring weights and OpenAI explanations remain subsequent Phase 2 work.
 
 The technical sections for backend, database, AI, API, security, and deployment
-below describe the **target MVP architecture for Phase 2**. They are retained as
-a reference and are **not current implementation requirements**.
+below describe the **target MVP architecture for Phase 2** and remain the
+implementation reference.
 
 ---
 
 # Development Phases
 
-## Phase 1 — Demo UI for Report Screenshots (Current)
+## Phase 1 — Demo UI for Report Screenshots (Completed)
 
 Goal:
 
@@ -64,8 +83,8 @@ Phase 1 includes:
 Phase 1 does **not** require:
 
 - A working Express.js backend.
-- Supabase Auth or a real user session.
-- Supabase database tables or storage.
+- Email/password authentication or a real user session.
+- SQLite database tables or persistent storage.
 - Real REST API calls.
 - A working recommendation algorithm.
 - OpenAI API calls.
@@ -84,7 +103,7 @@ After Phase 1 and the required report screenshots are complete, implement:
 - Real user authentication.
 - Persistent user profiles.
 - Express REST API.
-- Supabase database integration.
+- SQLite database integration.
 - Hybrid food recommendation engine.
 - Recommendation replacement and feedback persistence.
 - OpenAI-generated explanation after the recommendation engine finishes.
@@ -139,15 +158,14 @@ Everything outside this scope should be ignored unless explicitly requested.
 
 ## Database — Phase 2
 
-Supabase Cloud
+Use SQLite as the initial integrated MVP database.
 
-Use:
-
-- PostgreSQL
-- Supabase Auth
-- Supabase Storage (optional)
-
-DO NOT self-host Supabase.
+- SQLite is owned and accessed only by the Express backend.
+- Keep the database file in persistent server storage, not in the frontend app
+  bundle or a disposable container layer.
+- Use migrations and a repository/data-access layer so a later migration to
+  PostgreSQL remains possible.
+- Store menu image files outside SQLite and save only their paths or URLs.
 
 ---
 
@@ -217,8 +235,7 @@ Express REST API
         ├─────────────► OpenAI API
         │
         ▼
-Supabase Cloud
-(Auth + PostgreSQL)
+SQLite
 ```
 
 ---
@@ -339,9 +356,15 @@ Future versions may include:
 # Authentication — Phase 2
 
 For Phase 1, login and registration are presentation-only. Use a mock session or
-direct navigation to enter the demo; do not connect Supabase Auth yet.
+direct navigation to enter the demo; do not connect a real authentication
+service yet.
 
-Use Supabase Authentication.
+Use backend-managed email and password authentication. Google login and other
+OAuth providers are not required for the initial phase.
+
+Implementation status: register, login, Bearer access tokens, authenticated user
+lookup, Ionic forms, persistent opt-in session storage, and route guards are
+connected and tested.
 
 Flow:
 
@@ -350,15 +373,15 @@ Ionic Login
 
 ↓
 
-Supabase Auth
+Express Auth Endpoint
 
 ↓
 
-Access Token
+Validate Email + Password Hash
 
 ↓
 
-Express API
+Issue Access Token / Session
 
 ↓
 
@@ -371,14 +394,17 @@ Execute Request
 
 Express API must NEVER trust user_id sent from frontend.
 
-Always verify Supabase JWT.
+Always derive the user identity from a verified token or server-side session.
+Passwords must be hashed with a suitable password-hashing algorithm and must
+never be stored or logged as plain text.
 
 ---
 
 # Database — Phase 2
 
 No database is required in Phase 1. Equivalent frontend models and local fixture
-data may be used to render the UI.
+data may be used to render the UI. Phase 2 uses SQLite through the Express
+backend.
 
 ## user_profiles
 
@@ -386,6 +412,8 @@ data may be used to render the UI.
 id
 
 user_id
+
+name
 
 age
 
@@ -405,6 +433,8 @@ allergies
 
 disliked_foods
 
+food_preferences
+
 created_at
 
 updated_at
@@ -412,45 +442,53 @@ updated_at
 
 ---
 
-## menus
+## food_categories and food_ingredients
+
+The imported TKPI reference catalog stores source category metadata, unique
+TKPI codes, food names and types, nutrients per 100 grams of edible portion,
+nullable unavailable values, and source provenance.
+
+---
+
+## menus, menu_ingredients, and menu_nutrition
 
 ```
-id
+menus
+  id
+  slug
+  name
+  description
+  meal_type
+  serving_size_g
+  serving_description
+  curation_status
+  is_pilot
+  nutrition_source
+  calculation_version
+  curation_notes
 
-name
+menu_ingredients
+  menu_id
+  food_ingredient_id
+  amount_g
+  component_role
+  preparation_note
+  sort_order
 
-meal_type
-
-description
-
-image_url
-
-calories
-
-protein_g
-
-carbohydrate_g
-
-fat_g
-
-fiber_g
-
-sugar_g
-
-added_sugar_g
-
-sodium_mg
-
-preparation_minutes
-
-ingredients
-
-allergens
-
-instructions
-
-is_active
+menu_nutrition
+  menu_id
+  energy_kcal
+  protein_g
+  fat_g
+  carbohydrate_g
+  fiber_g
+  sodium_mg
+  other TKPI nutrients
 ```
+
+Menu tags, allergen assumptions, and manual review decisions are stored in
+separate relational tables. Only approved menus may later be exposed to the
+recommendation engine.
 
 ---
 
@@ -750,32 +788,47 @@ but they must not make real network requests.
 ## Profile
 
 ```
-GET /profile
+GET /api/v1/profile
 
-POST /profile
+POST /api/v1/profile
 
-PUT /profile
+PUT /api/v1/profile
 ```
+
+Implementation status: implemented with Bearer authentication, per-user data
+isolation, and connected Ionic profile setup/view/edit flows.
 
 ---
 
 ## Recommendation
 
 ```
-POST /recommendations/generate
+GET /api/v1/recommendations/daily
 
-GET /recommendations/today
+GET /api/v1/recommendations/daily?date=YYYY-MM-DD
 
-POST /recommendations/:id/replace
+GET /api/v1/recommendations/daily/alternatives
 ```
+
+Implementation status: rule-based v1 is available with Bearer authentication,
+approved-menu enforcement, calorie and preference scoring, hard
+allergy/disliked-food filters, deterministic daily rotation, structured
+reasons, and unique menu IDs per day. Alternative lookup, transactional
+replacement, immutable daily snapshots, and paginated history are available.
 
 ---
 
 ## Feedback
 
 ```
-POST /feedback
+GET /api/v1/feedback/:menuId
+
+PUT /api/v1/feedback/:menuId
 ```
+
+Implementation status: like/dislike and consumed status are persisted
+independently, dislike is a hard filter for new daily snapshots, and all
+feedback signals are captured for a future scoring version.
 
 ---
 
@@ -833,21 +886,21 @@ Containers:
 - app
 - caddy
 
-Supabase Cloud is external.
-
 OpenAI API is external.
+
+The SQLite database file must be mounted on persistent storage.
 
 ```
 Internet
       │
       ▼
-Caddy
+Caddy (HTTPS + reverse proxy)
       │
       ▼
 Express.js
       │
       ▼
-Supabase Cloud
+SQLite persistent volume
 ```
 
 ---
@@ -859,18 +912,16 @@ These variables are not required for the Phase 1 UI demo.
 ```
 PORT=
 
-SUPABASE_URL=
+DATABASE_URL=
 
-SUPABASE_ANON_KEY=
-
-SUPABASE_SERVICE_ROLE_KEY=
+AUTH_TOKEN_SECRET=
 
 OPENAI_API_KEY=
 ```
 
 Never expose:
 
-- SERVICE_ROLE_KEY
+- AUTH_TOKEN_SECRET
 - OPENAI_API_KEY
 
 to frontend.
@@ -922,11 +973,12 @@ Production security requirements apply when backend integration begins. During
 Phase 1, never place real secrets or API keys in frontend code or dummy data.
 
 - Validate every API request.
-- Verify Supabase JWT.
+- Verify every access token or session.
 - Never trust frontend data.
 - Sanitize user input.
+- Hash passwords and never store or log plain-text passwords.
 - Protect OpenAI API Key.
-- Never expose Service Role Key.
+- Never expose the authentication secret.
 
 ---
 

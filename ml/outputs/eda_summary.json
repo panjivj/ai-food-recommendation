@@ -1,0 +1,362 @@
+{
+  "generated_at_utc": "2026-07-29T15:43:42.930169+00:00",
+  "scope": {
+    "feature_eda": "training data only",
+    "class_distribution": "full dataset",
+    "missing_value_plot_policy": "Histogram and boxplot omit missing observations per feature without imputing them.",
+    "correlation_policy": "Pearson pairwise complete observations on training data."
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "matplotlib": "3.11.1",
+    "seaborn": "0.13.2"
+  },
+  "inputs": {
+    "dataset": "ml/data/menu_ml.csv",
+    "dataset_sha256": "af47859002d6c0bf282c88762d852076113cb729d6621bdd9ec2c50ddf8fbfa6",
+    "train": "ml/data/train.csv",
+    "train_sha256": "a6c47cd8ac7dcf7c5c1f83bab802db654a3675a88129f35c1a3ecda61a64ac5d",
+    "test": "ml/data/test.csv",
+    "test_sha256": "7de5d1684d5978e8117ab41cd07de43c09315ac472783b08ddc9e996c5f7b129"
+  },
+  "row_counts": {
+    "full": 614,
+    "train": 491,
+    "test": 123
+  },
+  "class_distribution": {
+    "full": {
+      "breakfast": {
+        "count": 153,
+        "percent": 24.9186
+      },
+      "dinner": {
+        "count": 184,
+        "percent": 29.9674
+      },
+      "lunch": {
+        "count": 185,
+        "percent": 30.1303
+      },
+      "snack": {
+        "count": 92,
+        "percent": 14.9837
+      }
+    },
+    "train": {
+      "breakfast": {
+        "count": 122,
+        "percent": 24.8473
+      },
+      "dinner": {
+        "count": 147,
+        "percent": 29.9389
+      },
+      "lunch": {
+        "count": 148,
+        "percent": 30.1426
+      },
+      "snack": {
+        "count": 74,
+        "percent": 15.0713
+      }
+    },
+    "test": {
+      "breakfast": {
+        "count": 31,
+        "percent": 25.2033
+      },
+      "dinner": {
+        "count": 37,
+        "percent": 30.0813
+      },
+      "lunch": {
+        "count": 37,
+        "percent": 30.0813
+      },
+      "snack": {
+        "count": 18,
+        "percent": 14.6341
+      }
+    }
+  },
+  "descriptive_statistics_train": [
+    {
+      "feature": "serving_size_g",
+      "count": 491,
+      "missing": 0,
+      "mean": 418.217923,
+      "std": 119.359393,
+      "minimum": 150.0,
+      "q1": 330.0,
+      "median": 495.0,
+      "q3": 510.0,
+      "maximum": 525.0,
+      "skewness": -0.842714
+    },
+    {
+      "feature": "energy_kcal",
+      "count": 491,
+      "missing": 0,
+      "mean": 407.814562,
+      "std": 130.20836,
+      "minimum": 104.4,
+      "q1": 330.75,
+      "median": 434.6,
+      "q3": 504.525,
+      "maximum": 637.25,
+      "skewness": -0.689876
+    },
+    {
+      "feature": "protein_g",
+      "count": 491,
+      "missing": 0,
+      "mean": 19.185356,
+      "std": 10.485405,
+      "minimum": 1.2,
+      "q1": 10.755,
+      "median": 19.53,
+      "q3": 25.72,
+      "maximum": 48.41,
+      "skewness": 0.380493
+    },
+    {
+      "feature": "fat_g",
+      "count": 491,
+      "missing": 0,
+      "mean": 6.814104,
+      "std": 5.591984,
+      "minimum": 0.28,
+      "q1": 1.945,
+      "median": 5.6,
+      "q3": 9.985,
+      "maximum": 34.06,
+      "skewness": 1.154061
+    },
+    {
+      "feature": "carbohydrate_g",
+      "count": 491,
+      "missing": 0,
+      "mean": 69.567189,
+      "std": 20.488269,
+      "minimum": 13.02,
+      "q1": 61.81,
+      "median": 70.36,
+      "q3": 82.535,
+      "maximum": 121.2,
+      "skewness": -0.59541
+    },
+    {
+      "feature": "fiber_g",
+      "count": 392,
+      "missing": 99,
+      "mean": 7.138967,
+      "std": 4.385973,
+      "minimum": 0.6,
+      "q1": 4.055,
+      "median": 6.03,
+      "q3": 8.86,
+      "maximum": 27.07,
+      "skewness": 1.547409
+    },
+    {
+      "feature": "sodium_mg",
+      "count": 491,
+      "missing": 0,
+      "mean": 113.989654,
+      "std": 115.43258,
+      "minimum": 2.0,
+      "q1": 31.3,
+      "median": 68.2,
+      "q3": 164.225,
+      "maximum": 678.45,
+      "skewness": 1.530991
+    }
+  ],
+  "per_class_medians_train": {
+    "breakfast": {
+      "serving_size_g": 330.0,
+      "energy_kcal": 344.0,
+      "protein_g": 11.085,
+      "fat_g": 1.66,
+      "carbohydrate_g": 69.255,
+      "fiber_g": 5.75,
+      "sodium_mg": 29.25
+    },
+    "dinner": {
+      "serving_size_g": 515.0,
+      "energy_kcal": 485.2,
+      "protein_g": 24.73,
+      "fat_g": 8.355,
+      "carbohydrate_g": 76.12,
+      "fiber_g": 7.65,
+      "sodium_mg": 125.4
+    },
+    "lunch": {
+      "serving_size_g": 510.0,
+      "energy_kcal": 496.5,
+      "protein_g": 24.21,
+      "fat_g": 9.13,
+      "carbohydrate_g": 75.01,
+      "fiber_g": 6.94,
+      "sodium_mg": 136.2
+    },
+    "snack": {
+      "serving_size_g": 200.0,
+      "energy_kcal": 149.45,
+      "protein_g": 5.37,
+      "fat_g": 1.0,
+      "carbohydrate_g": 31.07,
+      "fiber_g": 3.5,
+      "sodium_mg": 17.35
+    }
+  },
+  "top_correlation_pairs_train": [
+    {
+      "feature_1": "serving_size_g",
+      "feature_2": "energy_kcal",
+      "correlation": 0.866425,
+      "absolute_correlation": 0.866425
+    },
+    {
+      "feature_1": "energy_kcal",
+      "feature_2": "protein_g",
+      "correlation": 0.821846,
+      "absolute_correlation": 0.821846
+    },
+    {
+      "feature_1": "energy_kcal",
+      "feature_2": "carbohydrate_g",
+      "correlation": 0.790222,
+      "absolute_correlation": 0.790222
+    },
+    {
+      "feature_1": "serving_size_g",
+      "feature_2": "protein_g",
+      "correlation": 0.78387,
+      "absolute_correlation": 0.78387
+    },
+    {
+      "feature_1": "serving_size_g",
+      "feature_2": "carbohydrate_g",
+      "correlation": 0.671482,
+      "absolute_correlation": 0.671482
+    },
+    {
+      "feature_1": "energy_kcal",
+      "feature_2": "fat_g",
+      "correlation": 0.635497,
+      "absolute_correlation": 0.635497
+    },
+    {
+      "feature_1": "protein_g",
+      "feature_2": "fat_g",
+      "correlation": 0.582588,
+      "absolute_correlation": 0.582588
+    },
+    {
+      "feature_1": "serving_size_g",
+      "feature_2": "fat_g",
+      "correlation": 0.516598,
+      "absolute_correlation": 0.516598
+    },
+    {
+      "feature_1": "serving_size_g",
+      "feature_2": "sodium_mg",
+      "correlation": 0.477488,
+      "absolute_correlation": 0.477488
+    },
+    {
+      "feature_1": "carbohydrate_g",
+      "feature_2": "fiber_g",
+      "correlation": 0.455743,
+      "absolute_correlation": 0.455743
+    },
+    {
+      "feature_1": "protein_g",
+      "feature_2": "sodium_mg",
+      "correlation": 0.440526,
+      "absolute_correlation": 0.440526
+    },
+    {
+      "feature_1": "protein_g",
+      "feature_2": "carbohydrate_g",
+      "correlation": 0.436028,
+      "absolute_correlation": 0.436028
+    },
+    {
+      "feature_1": "energy_kcal",
+      "feature_2": "fiber_g",
+      "correlation": 0.42775,
+      "absolute_correlation": 0.42775
+    },
+    {
+      "feature_1": "serving_size_g",
+      "feature_2": "fiber_g",
+      "correlation": 0.374458,
+      "absolute_correlation": 0.374458
+    },
+    {
+      "feature_1": "energy_kcal",
+      "feature_2": "sodium_mg",
+      "correlation": 0.363533,
+      "absolute_correlation": 0.363533
+    },
+    {
+      "feature_1": "fat_g",
+      "feature_2": "sodium_mg",
+      "correlation": 0.340354,
+      "absolute_correlation": 0.340354
+    },
+    {
+      "feature_1": "protein_g",
+      "feature_2": "fiber_g",
+      "correlation": 0.273708,
+      "absolute_correlation": 0.273708
+    },
+    {
+      "feature_1": "fiber_g",
+      "feature_2": "sodium_mg",
+      "correlation": 0.151339,
+      "absolute_correlation": 0.151339
+    },
+    {
+      "feature_1": "carbohydrate_g",
+      "feature_2": "sodium_mg",
+      "correlation": 0.122526,
+      "absolute_correlation": 0.122526
+    },
+    {
+      "feature_1": "fat_g",
+      "feature_2": "fiber_g",
+      "correlation": 0.11769,
+      "absolute_correlation": 0.11769
+    },
+    {
+      "feature_1": "fat_g",
+      "feature_2": "carbohydrate_g",
+      "correlation": 0.101982,
+      "absolute_correlation": 0.101982
+    }
+  ],
+  "figures": {
+    "histogram": {
+      "path": "ml/outputs/eda/histogram_fitur.png",
+      "sha256": "ca3473e463adf1cbba22137669e3f076a33d81537657a9c1b58507fa6c0f05a4"
+    },
+    "correlation_matrix": {
+      "path": "ml/outputs/eda/correlation_matrix.png",
+      "sha256": "2871b09a09b0e0311c700d10dd64325bcb1da4e847776850eec731cdf1d4969c"
+    },
+    "boxplot": {
+      "path": "ml/outputs/eda/boxplot_per_kelas.png",
+      "sha256": "5c59247c28987975bbabd56ee7fbe9364eeea78020c59198d3908ef59363e064"
+    },
+    "class_distribution": {
+      "path": "ml/outputs/eda/class_distribution.png",
+      "sha256": "b4eb05510cdada67d3414a5e64d21fe989ad158890f38b28884fac612cb6f5ee"
+    }
+  }
+}

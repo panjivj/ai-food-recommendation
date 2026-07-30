@@ -1,0 +1,228 @@
+import type { AppDatabase } from './database.js'
+import {
+  seedMenus,
+  type ComponentRole,
+  type MenuComponentSeed,
+  type MenuSeed,
+  type MenuSeedResult,
+} from './menu-seeder.js'
+
+const component = (
+  tkpiCode: string,
+  amountG: number,
+  role: ComponentRole,
+): MenuComponentSeed => ({ amountG, role, tkpiCode })
+
+export const pilotMenus: readonly MenuSeed[] = [
+  {
+    id: 'pilot-003',
+    slug: 'ubi-kuning-yoghurt-dan-apel',
+    name: 'Ubi Kuning, Yoghurt, dan Apel',
+    description: 'Ubi jalar kuning kukus dengan yoghurt dan apel segar.',
+    mealType: 'breakfast',
+    components: [
+      component('BP011', 150, 'staple'),
+      component('JP011', 150, 'beverage'),
+      component('ER003', 100, 'fruit'),
+    ],
+    tags: ['sarapan', 'umbi', 'buah'],
+    allergens: ['milk'],
+  },
+  {
+    id: 'pilot-004',
+    slug: 'ubi-cilembu-kacang-merah-dan-melon',
+    name: 'Ubi Cilembu, Kacang Merah, dan Melon',
+    description: 'Ubi Cilembu dengan kacang merah rebus dan melon segar.',
+    mealType: 'breakfast',
+    components: [
+      component('BP075', 120, 'staple'),
+      component('CP008', 80, 'protein'),
+      component('ER067', 100, 'fruit'),
+    ],
+    tags: ['sarapan', 'umbi', 'buah', 'nabati'],
+    allergens: [],
+  },
+  {
+    id: 'pilot-005',
+    slug: 'jagung-tahu-dan-jeruk',
+    name: 'Jagung, Tahu, dan Jeruk',
+    description: 'Jagung rebus dengan tahu goreng dan jeruk manis.',
+    mealType: 'breakfast',
+    components: [
+      component('AP012', 120, 'staple'),
+      component('CP062', 80, 'protein'),
+      component('ER039', 100, 'fruit'),
+    ],
+    tags: ['sarapan', 'protein', 'buah', 'nabati'],
+    allergens: ['soy'],
+  },
+  {
+    id: 'pilot-009',
+    slug: 'nasi-ayam-kalasan-bayam-dan-melon',
+    name: 'Nasi, Ayam Kalasan, Bayam, dan Melon',
+    description: 'Nasi dengan ayam Kalasan, bayam kukus, dan melon.',
+    mealType: 'lunch',
+    components: [
+      component('AP001', 120, 'staple'),
+      component('FP024', 80, 'protein'),
+      component('DP001', 200, 'vegetable'),
+      component('ER067', 100, 'fruit'),
+    ],
+    tags: ['makan-siang', 'ayam', 'sayuran', 'buah'],
+    allergens: ['soy'],
+  },
+  {
+    id: 'pilot-010',
+    slug: 'nasi-merah-ikan-baung-buncis-dan-apel',
+    name: 'Nasi Merah, Ikan Baung, Buncis, dan Apel',
+    description: 'Nasi merah dengan ikan baung, buncis rebus, dan apel.',
+    mealType: 'lunch',
+    components: [
+      component('AP005', 120, 'staple'),
+      component('GP006', 90, 'protein'),
+      component('DP003', 200, 'vegetable'),
+      component('ER003', 100, 'fruit'),
+    ],
+    tags: ['makan-siang', 'ikan', 'sayuran', 'buah'],
+    allergens: ['fish'],
+  },
+  {
+    id: 'pilot-012',
+    slug: 'nasi-merah-pepes-mujahir-wortel-dan-jeruk',
+    name: 'Nasi Merah, Pepes Mujahir, Wortel, dan Jeruk',
+    description: 'Nasi merah dengan pepes mujair, wortel rebus, dan jeruk.',
+    mealType: 'lunch',
+    components: [
+      component('AP005', 120, 'staple'),
+      component('GP021', 90, 'protein'),
+      component('DP020', 200, 'vegetable'),
+      component('ER039', 100, 'fruit'),
+    ],
+    tags: ['makan-siang', 'ikan', 'sayuran', 'buah'],
+    allergens: ['fish'],
+  },
+  {
+    id: 'pilot-015',
+    slug: 'nasi-ayam-taliwang-daun-singkong-dan-nanas',
+    name: 'Nasi, Ayam Taliwang, Daun Singkong, dan Nanas',
+    description: 'Nasi dengan ayam Taliwang, daun singkong rebus, dan nanas.',
+    mealType: 'lunch',
+    components: [
+      component('AP001', 120, 'staple'),
+      component('FP034', 80, 'protein'),
+      component('DP008', 200, 'vegetable'),
+      component('ER069', 100, 'fruit'),
+    ],
+    tags: ['makan-siang', 'ayam', 'sayuran', 'buah'],
+    allergens: ['shellfish'],
+  },
+  {
+    id: 'pilot-017',
+    slug: 'nasi-ikan-patin-kangkung-dan-nanas',
+    name: 'Nasi, Ikan Patin, Kangkung, dan Nanas',
+    description: 'Nasi dengan ikan patin, kangkung rebus, dan nanas.',
+    mealType: 'lunch',
+    components: [
+      component('AP001', 120, 'staple'),
+      component('GP024', 90, 'protein'),
+      component('DP014', 200, 'vegetable'),
+      component('ER069', 100, 'fruit'),
+    ],
+    tags: ['makan-siang', 'ikan', 'sayuran', 'buah'],
+    allergens: ['fish'],
+  },
+  {
+    id: 'pilot-018',
+    slug: 'nasi-merah-ikan-papuyu-wortel-dan-melon',
+    name: 'Nasi Merah, Ikan Papuyu, Wortel, dan Melon',
+    description: 'Nasi merah dengan ikan papuyu, wortel rebus, dan melon.',
+    mealType: 'dinner',
+    components: [
+      component('AP005', 120, 'staple'),
+      component('GP023', 90, 'protein'),
+      component('DP020', 200, 'vegetable'),
+      component('ER067', 100, 'fruit'),
+    ],
+    tags: ['makan-malam', 'ikan', 'sayuran', 'buah'],
+    allergens: ['fish'],
+  },
+  {
+    id: 'pilot-019',
+    slug: 'nasi-cumi-bayam-dan-jeruk',
+    name: 'Nasi, Cumi, Bayam, dan Jeruk',
+    description: 'Nasi dengan cumi goreng, bayam kukus, dan jeruk.',
+    mealType: 'dinner',
+    components: [
+      component('AP001', 120, 'staple'),
+      component('GP003', 80, 'protein'),
+      component('DP001', 200, 'vegetable'),
+      component('ER039', 100, 'fruit'),
+    ],
+    tags: ['makan-malam', 'seafood', 'sayuran', 'buah'],
+    allergens: ['shellfish'],
+  },
+  {
+    id: 'pilot-021',
+    slug: 'nasi-merah-tahu-buncis-dan-jambu',
+    name: 'Nasi Merah, Tahu, Buncis, dan Jambu Biji',
+    description: 'Nasi merah dengan tahu goreng, buncis rebus, dan jambu biji.',
+    mealType: 'dinner',
+    components: [
+      component('AP005', 120, 'staple'),
+      component('CP062', 80, 'protein'),
+      component('DP003', 200, 'vegetable'),
+      component('ER031', 100, 'fruit'),
+    ],
+    tags: ['makan-malam', 'nabati', 'sayuran', 'buah'],
+    allergens: ['soy'],
+  },
+  {
+    id: 'pilot-022',
+    slug: 'nasi-tempe-bayam-dan-melon',
+    name: 'Nasi, Tempe, Bayam, dan Melon',
+    description: 'Nasi dengan tempe goreng, bayam kukus, dan melon.',
+    mealType: 'dinner',
+    components: [
+      component('AP001', 120, 'staple'),
+      component('CP083', 70, 'protein'),
+      component('DP001', 200, 'vegetable'),
+      component('ER067', 100, 'fruit'),
+    ],
+    tags: ['makan-malam', 'nabati', 'sayuran', 'buah'],
+    allergens: ['soy'],
+  },
+  {
+    id: 'pilot-024',
+    slug: 'pempek-telur-dan-melon',
+    name: 'Pempek Telur dan Melon',
+    description: 'Porsi kecil pempek telur dengan melon segar.',
+    mealType: 'snack',
+    components: [
+      component('GP082', 65, 'complete_dish'),
+      component('ER067', 100, 'fruit'),
+    ],
+    tags: ['camilan', 'ikan', 'buah'],
+    allergens: ['egg', 'fish'],
+  },
+  {
+    id: 'pilot-025',
+    slug: 'jagung-yoghurt-dan-apel',
+    name: 'Jagung, Yoghurt, dan Apel',
+    description: 'Jagung rebus dengan yoghurt dan apel segar.',
+    mealType: 'snack',
+    components: [
+      component('AP010', 100, 'staple'),
+      component('JP011', 100, 'beverage'),
+      component('ER003', 100, 'fruit'),
+    ],
+    tags: ['camilan', 'jagung', 'buah'],
+    allergens: ['milk'],
+  },
+]
+
+export function seedPilotMenus(database: AppDatabase): MenuSeedResult {
+  if (pilotMenus.length !== 14) {
+    throw new Error(`Expected 14 approved pilot menus, received ${pilotMenus.length}`)
+  }
+  return seedMenus(database, pilotMenus, 1)
+}

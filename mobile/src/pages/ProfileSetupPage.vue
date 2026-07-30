@@ -12,11 +12,21 @@ import {
   personOutline,
 } from 'ionicons/icons'
 import { useDemoStore } from '@/stores/demo'
+import { userFacingApiError } from '@/services/api/client'
+import { useAuthStore } from '@/stores/auth'
+import { useProfileStore } from '@/stores/profile'
 import type { DemoUser } from '@/types/domain'
 
 const router = useRouter()
 const demoStore = useDemoStore()
+const authStore = useAuthStore()
+const profileStore = useProfileStore()
 
+const name = ref(
+  authStore.pendingProfileName ??
+    authStore.user?.email.split('@')[0] ??
+    demoStore.user.name,
+)
 const age = ref(demoStore.user.age)
 const gender = ref<DemoUser['gender']>(demoStore.user.gender)
 const heightCm = ref(demoStore.user.heightCm)
@@ -28,20 +38,44 @@ const goal = ref<DemoUser['goal']>(demoStore.user.goal)
 const healthCondition = ref('Tidak ada')
 const allergy = ref(demoStore.user.allergies[0] ?? 'Tidak ada')
 const foodPreference = ref('Makanan rumahan')
+const errorMessage = ref('')
+const saving = ref(false)
 
-const saveProfile = () => {
-  demoStore.user.age = age.value
-  demoStore.user.gender = gender.value
-  demoStore.user.heightCm = heightCm.value
-  demoStore.user.weightKg = weightKg.value
-  demoStore.user.activityLevel = activityLevel.value
-  demoStore.user.goal = goal.value
-  demoStore.user.healthConditions =
-    healthCondition.value === 'Tidak ada' ? [] : [healthCondition.value]
-  demoStore.user.allergies =
-    allergy.value === 'Tidak ada' ? [] : [allergy.value]
+const saveProfile = async () => {
+  errorMessage.value = ''
+  saving.value = true
 
-  router.replace('/app/home')
+  try {
+    await profileStore.create({
+      name: name.value,
+      age: age.value,
+      gender: gender.value,
+      heightCm: heightCm.value,
+      weightKg: weightKg.value,
+      activityLevel: activityLevel.value,
+      goal: goal.value,
+      healthConditions:
+        healthCondition.value === 'Tidak ada' ? [] : [healthCondition.value],
+      allergies: allergy.value === 'Tidak ada' ? [] : [allergy.value],
+      dislikedFoods: [],
+      foodPreferences: [foodPreference.value],
+    })
+    await authStore.clearPendingProfileName()
+    await router.replace('/app/home')
+  } catch (error) {
+    errorMessage.value = userFacingApiError(
+      error,
+      'Profil gagal disimpan. Silakan periksa kembali datanya.',
+    )
+  } finally {
+    saving.value = false
+  }
+}
+
+const cancelSetup = async () => {
+  await authStore.logout()
+  profileStore.reset()
+  await router.replace('/register')
 }
 </script>
 
@@ -54,7 +88,7 @@ const saveProfile = () => {
             class="back-button"
             type="button"
             aria-label="Kembali ke halaman registrasi"
-            @click="router.push('/register')"
+            @click="cancelSetup"
           >
             <ion-icon aria-hidden="true" :icon="arrowBack" />
           </button>
@@ -91,6 +125,19 @@ const saveProfile = () => {
               </div>
             </div>
 
+            <label class="profile-name-field">
+              <span>Nama lengkap</span>
+              <input
+                v-model="name"
+                type="text"
+                autocomplete="name"
+                minlength="2"
+                maxlength="100"
+                aria-label="Nama lengkap"
+                required
+              />
+            </label>
+
             <div class="metrics-grid">
               <label>
                 <span>Usia</span>
@@ -105,6 +152,7 @@ const saveProfile = () => {
                   <input
                     v-model.number="heightCm"
                     type="number"
+                    step="0.1"
                     aria-label="Tinggi badan"
                   />
                   <small>cm</small>
@@ -116,6 +164,7 @@ const saveProfile = () => {
                   <input
                     v-model.number="weightKg"
                     type="number"
+                    step="0.1"
                     aria-label="Berat badan"
                   />
                   <small>kg</small>
@@ -264,13 +313,17 @@ const saveProfile = () => {
             </label>
           </section>
 
-          <button class="save-button" type="submit">
-            Simpan & lihat rekomendasi
+          <p v-if="errorMessage" class="form-error" role="alert">
+            {{ errorMessage }}
+          </p>
+
+          <button class="save-button" type="submit" :disabled="saving">
+            {{ saving ? 'Menyimpan profil...' : 'Simpan & lihat rekomendasi' }}
             <ion-icon aria-hidden="true" :icon="arrowForward" />
           </button>
 
           <p class="privacy-note">
-            Data ini hanya digunakan sebagai data dummy pada demo aplikasi.
+            Data profil disimpan pada akun dan digunakan untuk personalisasi.
           </p>
         </form>
       </main>
@@ -454,6 +507,36 @@ const saveProfile = () => {
   display: grid;
   gap: var(--app-space-2);
   grid-template-columns: repeat(3, 1fr);
+}
+
+.profile-name-field {
+  display: grid;
+  gap: 5px;
+  margin-bottom: var(--app-space-3);
+}
+
+.profile-name-field span {
+  color: var(--app-text-muted);
+  font-size: 0.58rem;
+  font-weight: 750;
+}
+
+.profile-name-field input {
+  background: #fbfcfa;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  color: var(--app-text);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 750;
+  min-height: 40px;
+  outline: 0;
+  padding: 0 10px;
+  width: 100%;
+}
+
+.profile-name-field input:focus {
+  border-color: var(--ion-color-primary);
 }
 
 .metrics-grid > label,
@@ -641,6 +724,19 @@ const saveProfile = () => {
 .save-button:active {
   background: var(--ion-color-primary-shade);
   transform: scale(0.99);
+}
+
+.save-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.form-error {
+  color: var(--ion-color-danger);
+  font-size: 0.66rem;
+  line-height: 1.45;
+  margin: 0;
+  text-align: center;
 }
 
 .privacy-note {

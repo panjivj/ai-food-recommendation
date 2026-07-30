@@ -1,0 +1,157 @@
+{
+  "generated_at_utc": "2026-07-30T02:41:04.693464+00:00",
+  "protocol": {
+    "evaluation": "one-time held-out test evaluation",
+    "test_rows": 123,
+    "model_refit": false,
+    "inference_calls": 1,
+    "resumed_from_prediction_cache": true,
+    "class_prediction_rule": "maximum predicted probability",
+    "averaging": "macro",
+    "multiclass_roc_auc": "one-vs-rest macro average",
+    "confusion_matrix_orientation": "rows=actual classes, columns=predicted classes"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "scikit_learn": "1.9.0",
+    "joblib": "1.5.3",
+    "matplotlib": "3.11.1",
+    "seaborn": "0.13.2"
+  },
+  "inputs": {
+    "test": "ml/data/test.csv",
+    "test_sha256": "7de5d1684d5978e8117ab41cd07de43c09315ac472783b08ddc9e996c5f7b129",
+    "model_artifact": "ml/artifacts/tuned_decision_tree.joblib",
+    "model_artifact_sha256": "6cb0c572d29d43ac5ee5702efa444a928409dc1fedbfc1942102403de0d9b474",
+    "model_train_sha256": "a6c47cd8ac7dcf7c5c1f83bab802db654a3675a88129f35c1a3ecda61a64ac5d"
+  },
+  "classes": [
+    "breakfast",
+    "dinner",
+    "lunch",
+    "snack"
+  ],
+  "metrics": {
+    "overall": {
+      "accuracy": 0.926829268292683,
+      "precision_macro": 0.9427083333333334,
+      "recall_macro": 0.9391891891891893,
+      "f1_macro": 0.9389102916895982,
+      "roc_auc_ovr_macro": 0.9713623507228158
+    },
+    "per_class": {
+      "breakfast": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 31,
+        "roc_auc_ovr": 1.0
+      },
+      "dinner": {
+        "precision": 0.9375,
+        "recall": 0.8108108108108109,
+        "f1_score": 0.8695652173913043,
+        "support": 37,
+        "roc_auc_ovr": 0.9311753614079197
+      },
+      "lunch": {
+        "precision": 0.8333333333333334,
+        "recall": 0.9459459459459459,
+        "f1_score": 0.8860759493670886,
+        "support": 37,
+        "roc_auc_ovr": 0.9542740414833438
+      },
+      "snack": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "support": 18,
+        "roc_auc_ovr": 1.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        31,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        30,
+        7,
+        0
+      ],
+      [
+        0,
+        2,
+        35,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        18
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.8108108108108109,
+        0.1891891891891892,
+        0.0
+      ],
+      [
+        0.0,
+        0.05405405405405406,
+        0.9459459459459459,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ]
+  },
+  "outputs": {
+    "metrics_csv": {
+      "path": "ml/outputs/final_metrics.csv",
+      "sha256": "5948f565d0f1b2ae47ecc70466fc7daec088efb97775062425e8bf555e85492a"
+    },
+    "classification_report_csv": {
+      "path": "ml/outputs/classification_report.csv",
+      "sha256": "4495ac940aa86b5ba77997c88b5088002ebe6f737f89f9380d73ba7dc547740c"
+    },
+    "confusion_matrix_csv": {
+      "path": "ml/outputs/confusion_matrix.csv",
+      "sha256": "6d28e456cabb62504e3f824e85be8afb54d82611648250561b61fed32512f080"
+    },
+    "confusion_matrix_normalized_csv": {
+      "path": "ml/outputs/confusion_matrix_normalized.csv",
+      "sha256": "f47cc130e6b606be728ca79cdb04c0b5300615386cc4d756dd0b0bca0896db16"
+    },
+    "predictions_csv": {
+      "path": "ml/outputs/test_predictions.csv",
+      "sha256": "595aa46d56dea1ec05250232a20ac1961769c9aebc12cd2c942313de264ede54"
+    },
+    "confusion_matrix_figure": {
+      "path": "ml/outputs/confusion_matrix.png",
+      "sha256": "375a361cf39479b537d038edc15fa4629376ef3d6276ac53ad49001d98df8593"
+    },
+    "roc_figure": {
+      "path": "ml/outputs/roc_multiclass.png",
+      "sha256": "bb4b5da531d2afa4d3bb806d37a00c43bc4b983fc1a66cd27092f246b7789cbc"
+    }
+  }
+}

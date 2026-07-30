@@ -1,0 +1,5 @@
+actual_class,breakfast,dinner,lunch,snack
+breakfast,31,0,0,0
+dinner,0,30,7,0
+lunch,0,2,35,0
+snack,0,0,0,18

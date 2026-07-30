@@ -1,0 +1,512 @@
+{
+  "generated_at_utc": "2026-07-29T15:32:48.888143+00:00",
+  "environment": {
+    "python": "3.12.3",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "scikit_learn": "1.9.0"
+  },
+  "source": {
+    "dataset": "ml/data/menu_ml.csv",
+    "dataset_sha256": "af47859002d6c0bf282c88762d852076113cb729d6621bdd9ec2c50ddf8fbfa6"
+  },
+  "outputs": {
+    "train": "ml/data/train.csv",
+    "train_sha256": "a6c47cd8ac7dcf7c5c1f83bab802db654a3675a88129f35c1a3ecda61a64ac5d",
+    "test": "ml/data/test.csv",
+    "test_sha256": "7de5d1684d5978e8117ab41cd07de43c09315ac472783b08ddc9e996c5f7b129"
+  },
+  "configuration": {
+    "feature_columns": [
+      "serving_size_g",
+      "energy_kcal",
+      "protein_g",
+      "fat_g",
+      "carbohydrate_g",
+      "fiber_g",
+      "sodium_mg"
+    ],
+    "metadata_columns_not_for_model": [
+      "menu_id",
+      "menu_name"
+    ],
+    "target_column": "meal_type",
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratified_by": "meal_type",
+    "missing_value_strategy": "median fitted on training data",
+    "outlier_strategy": "retain values that pass validity checks; use RobustScaler to reduce sensitivity",
+    "scaling": "RobustScaler with quantile_range=(25, 75)",
+    "target_encoding": "LabelEncoder fitted on training target"
+  },
+  "cleaning": {
+    "original_rows": 614,
+    "final_rows": 614,
+    "removed_rows": 0,
+    "original_columns": [
+      "menu_id",
+      "menu_name",
+      "serving_size_g",
+      "energy_kcal",
+      "protein_g",
+      "fat_g",
+      "carbohydrate_g",
+      "fiber_g",
+      "sodium_mg",
+      "meal_type"
+    ],
+    "final_columns": [
+      "menu_id",
+      "menu_name",
+      "serving_size_g",
+      "energy_kcal",
+      "protein_g",
+      "fat_g",
+      "carbohydrate_g",
+      "fiber_g",
+      "sodium_mg",
+      "meal_type"
+    ],
+    "duplicate_menu_ids": 0,
+    "duplicate_normalized_names": 0,
+    "duplicate_feature_and_target_rows": 0,
+    "nonfinite_values": {
+      "serving_size_g": 0,
+      "energy_kcal": 0,
+      "protein_g": 0,
+      "fat_g": 0,
+      "carbohydrate_g": 0,
+      "fiber_g": 0,
+      "sodium_mg": 0
+    },
+    "negative_values": {
+      "serving_size_g": 0,
+      "energy_kcal": 0,
+      "protein_g": 0,
+      "fat_g": 0,
+      "carbohydrate_g": 0,
+      "fiber_g": 0,
+      "sodium_mg": 0
+    },
+    "missing_values": {
+      "serving_size_g": 0,
+      "energy_kcal": 0,
+      "protein_g": 0,
+      "fat_g": 0,
+      "carbohydrate_g": 0,
+      "fiber_g": 122,
+      "sodium_mg": 0
+    },
+    "normalization": [
+      "Whitespace at the edges of menu_id and menu_name was removed.",
+      "meal_type was stripped and normalized to lowercase.",
+      "Feature columns were validated as numeric."
+    ]
+  },
+  "split": {
+    "total_rows": 614,
+    "train_rows": 491,
+    "test_rows": 123,
+    "train_percent": 79.9674,
+    "test_percent": 20.0326,
+    "menu_id_overlap_count": 0,
+    "train_class_distribution": {
+      "breakfast": {
+        "count": 122,
+        "percent": 24.8473
+      },
+      "dinner": {
+        "count": 147,
+        "percent": 29.9389
+      },
+      "lunch": {
+        "count": 148,
+        "percent": 30.1426
+      },
+      "snack": {
+        "count": 74,
+        "percent": 15.0713
+      }
+    },
+    "test_class_distribution": {
+      "breakfast": {
+        "count": 31,
+        "percent": 25.2033
+      },
+      "dinner": {
+        "count": 37,
+        "percent": 30.0813
+      },
+      "lunch": {
+        "count": 37,
+        "percent": 30.0813
+      },
+      "snack": {
+        "count": 18,
+        "percent": 14.6341
+      }
+    }
+  },
+  "missing_values": {
+    "full": {
+      "serving_size_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "energy_kcal": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "protein_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "fat_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "carbohydrate_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "fiber_g": {
+        "count": 122,
+        "percent": 19.8697
+      },
+      "sodium_mg": {
+        "count": 0,
+        "percent": 0.0
+      }
+    },
+    "train_before_imputation": {
+      "serving_size_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "energy_kcal": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "protein_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "fat_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "carbohydrate_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "fiber_g": {
+        "count": 99,
+        "percent": 20.1629
+      },
+      "sodium_mg": {
+        "count": 0,
+        "percent": 0.0
+      }
+    },
+    "test_before_imputation": {
+      "serving_size_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "energy_kcal": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "protein_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "fat_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "carbohydrate_g": {
+        "count": 0,
+        "percent": 0.0
+      },
+      "fiber_g": {
+        "count": 23,
+        "percent": 18.6992
+      },
+      "sodium_mg": {
+        "count": 0,
+        "percent": 0.0
+      }
+    },
+    "train_after_preview_transform": 0,
+    "test_after_preview_transform": 0
+  },
+  "outliers": {
+    "method": "1.5 x IQR, calculated before imputation and scaling",
+    "decision": "Retained because no domain-invalid or negative values were found; candidates are reported for transparency.",
+    "full": {
+      "serving_size_g": {
+        "q1": 330.0,
+        "q3": 510.0,
+        "iqr": 180.0,
+        "lower_bound": 60.0,
+        "upper_bound": 780.0,
+        "outlier_count": 0,
+        "outlier_percent": 0.0
+      },
+      "energy_kcal": {
+        "q1": 329.4,
+        "q3": 504.225,
+        "iqr": 174.825,
+        "lower_bound": 67.1625,
+        "upper_bound": 766.4625,
+        "outlier_count": 0,
+        "outlier_percent": 0.0
+      },
+      "protein_g": {
+        "q1": 10.815,
+        "q3": 25.4325,
+        "iqr": 14.6175,
+        "lower_bound": -11.11125,
+        "upper_bound": 47.35875,
+        "outlier_count": 3,
+        "outlier_percent": 0.4886
+      },
+      "fat_g": {
+        "q1": 1.965,
+        "q3": 9.8175,
+        "iqr": 7.8525,
+        "lower_bound": -9.81375,
+        "upper_bound": 21.59625,
+        "outlier_count": 10,
+        "outlier_percent": 1.6287
+      },
+      "carbohydrate_g": {
+        "q1": 62.37,
+        "q3": 82.7,
+        "iqr": 20.33,
+        "lower_bound": 31.875,
+        "upper_bound": 113.195,
+        "outlier_count": 53,
+        "outlier_percent": 8.6319
+      },
+      "fiber_g": {
+        "q1": 4.0075,
+        "q3": 8.955,
+        "iqr": 4.9475,
+        "lower_bound": -3.41375,
+        "upper_bound": 16.37625,
+        "outlier_count": 21,
+        "outlier_percent": 4.2683
+      },
+      "sodium_mg": {
+        "q1": 31.15,
+        "q3": 164.05,
+        "iqr": 132.9,
+        "lower_bound": -168.2,
+        "upper_bound": 363.4,
+        "outlier_count": 40,
+        "outlier_percent": 6.5147
+      }
+    },
+    "train": {
+      "serving_size_g": {
+        "q1": 330.0,
+        "q3": 510.0,
+        "iqr": 180.0,
+        "lower_bound": 60.0,
+        "upper_bound": 780.0,
+        "outlier_count": 0,
+        "outlier_percent": 0.0
+      },
+      "energy_kcal": {
+        "q1": 330.75,
+        "q3": 504.525,
+        "iqr": 173.775,
+        "lower_bound": 70.0875,
+        "upper_bound": 765.1875,
+        "outlier_count": 0,
+        "outlier_percent": 0.0
+      },
+      "protein_g": {
+        "q1": 10.755,
+        "q3": 25.72,
+        "iqr": 14.965,
+        "lower_bound": -11.6925,
+        "upper_bound": 48.1675,
+        "outlier_count": 2,
+        "outlier_percent": 0.4073
+      },
+      "fat_g": {
+        "q1": 1.945,
+        "q3": 9.985,
+        "iqr": 8.04,
+        "lower_bound": -10.115,
+        "upper_bound": 22.045,
+        "outlier_count": 7,
+        "outlier_percent": 1.4257
+      },
+      "carbohydrate_g": {
+        "q1": 61.81,
+        "q3": 82.535,
+        "iqr": 20.725,
+        "lower_bound": 30.7225,
+        "upper_bound": 113.6225,
+        "outlier_count": 40,
+        "outlier_percent": 8.1466
+      },
+      "fiber_g": {
+        "q1": 4.055,
+        "q3": 8.86,
+        "iqr": 4.805,
+        "lower_bound": -3.1525,
+        "upper_bound": 16.0675,
+        "outlier_count": 16,
+        "outlier_percent": 4.0816
+      },
+      "sodium_mg": {
+        "q1": 31.3,
+        "q3": 164.225,
+        "iqr": 132.925,
+        "lower_bound": -168.0875,
+        "upper_bound": 363.6125,
+        "outlier_count": 32,
+        "outlier_percent": 6.5173
+      }
+    },
+    "test": {
+      "serving_size_g": {
+        "q1": 330.0,
+        "q3": 515.0,
+        "iqr": 185.0,
+        "lower_bound": 52.5,
+        "upper_bound": 792.5,
+        "outlier_count": 0,
+        "outlier_percent": 0.0
+      },
+      "energy_kcal": {
+        "q1": 327.9,
+        "q3": 500.15,
+        "iqr": 172.25,
+        "lower_bound": 69.525,
+        "upper_bound": 758.525,
+        "outlier_count": 0,
+        "outlier_percent": 0.0
+      },
+      "protein_g": {
+        "q1": 11.055,
+        "q3": 24.8025,
+        "iqr": 13.7475,
+        "lower_bound": -9.56625,
+        "upper_bound": 45.42375,
+        "outlier_count": 2,
+        "outlier_percent": 1.626
+      },
+      "fat_g": {
+        "q1": 2.1375,
+        "q3": 8.755,
+        "iqr": 6.6175,
+        "lower_bound": -7.78875,
+        "upper_bound": 18.68125,
+        "outlier_count": 4,
+        "outlier_percent": 3.252
+      },
+      "carbohydrate_g": {
+        "q1": 64.095,
+        "q3": 83.5,
+        "iqr": 19.405,
+        "lower_bound": 34.9875,
+        "upper_bound": 112.6075,
+        "outlier_count": 14,
+        "outlier_percent": 11.3821
+      },
+      "fiber_g": {
+        "q1": 3.88,
+        "q3": 9.885,
+        "iqr": 6.005,
+        "lower_bound": -5.1275,
+        "upper_bound": 18.8925,
+        "outlier_count": 4,
+        "outlier_percent": 4.0
+      },
+      "sodium_mg": {
+        "q1": 31.075,
+        "q3": 161.7,
+        "iqr": 130.625,
+        "lower_bound": -164.8625,
+        "upper_bound": 357.6375,
+        "outlier_count": 8,
+        "outlier_percent": 6.5041
+      }
+    }
+  },
+  "target_encoding": {
+    "mapping": {
+      "breakfast": 0,
+      "dinner": 1,
+      "lunch": 2,
+      "snack": 3
+    },
+    "encoded_train_min": 0,
+    "encoded_train_max": 3,
+    "encoded_test_min": 0,
+    "encoded_test_max": 3
+  },
+  "preview_transform": {
+    "purpose": "Validation only. Model selection must create a fresh preprocessor inside each estimator pipeline.",
+    "train_shape": [
+      491,
+      7
+    ],
+    "test_shape": [
+      123,
+      7
+    ],
+    "train_nonfinite_count": 0,
+    "test_nonfinite_count": 0,
+    "training_fitted_parameters": {
+      "serving_size_g": {
+        "imputation_median": 495.0,
+        "robust_scaler_center": 495.0,
+        "robust_scaler_scale": 180.0
+      },
+      "energy_kcal": {
+        "imputation_median": 434.6,
+        "robust_scaler_center": 434.6,
+        "robust_scaler_scale": 173.775
+      },
+      "protein_g": {
+        "imputation_median": 19.53,
+        "robust_scaler_center": 19.53,
+        "robust_scaler_scale": 14.965
+      },
+      "fat_g": {
+        "imputation_median": 5.6,
+        "robust_scaler_center": 5.6,
+        "robust_scaler_scale": 8.04
+      },
+      "carbohydrate_g": {
+        "imputation_median": 70.36,
+        "robust_scaler_center": 70.36,
+        "robust_scaler_scale": 20.725
+      },
+      "fiber_g": {
+        "imputation_median": 6.03,
+        "robust_scaler_center": 6.03,
+        "robust_scaler_scale": 3.375
+      },
+      "sodium_mg": {
+        "imputation_median": 68.2,
+        "robust_scaler_center": 68.2,
+        "robust_scaler_scale": 132.925
+      }
+    }
+  },
+  "leakage_controls": [
+    "Pembagian data dilakukan sebelum imputer atau scaler di-fit.",
+    "menu_id dan menu_name dikeluarkan dari transformer fitur.",
+    "Statistik imputer dan scaler hanya dipelajari dari baris data latih.",
+    "Berkas train dan test mentah diekspor; array hasil transformasi tidak digunakan ulang untuk cross-validation.",
+    "Pipeline model harus memuat preprocessor baru agar setiap fold cross-validation mempelajari statistiknya sendiri."
+  ]
+}

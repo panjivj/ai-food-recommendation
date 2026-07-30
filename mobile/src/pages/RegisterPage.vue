@@ -13,19 +13,24 @@ import {
   personOutline,
   shieldCheckmarkOutline,
 } from 'ionicons/icons'
-import { demoUser } from '@/mocks/user'
+import { userFacingApiError } from '@/services/api/client'
+import { useAuthStore } from '@/stores/auth'
+import { useProfileStore } from '@/stores/profile'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const profileStore = useProfileStore()
 
-const name = ref(demoUser.name)
-const email = ref(demoUser.email)
-const password = ref('Demo1234')
-const passwordConfirmation = ref('Demo1234')
-const acceptedTerms = ref(true)
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const passwordConfirmation = ref('')
+const acceptedTerms = ref(false)
 const showPassword = ref(false)
 const errorMessage = ref('')
+const submitting = ref(false)
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   errorMessage.value = ''
 
   if (
@@ -43,12 +48,30 @@ const handleSubmit = () => {
     return
   }
 
+  if (password.value.length < 8) {
+    errorMessage.value = 'Kata sandi minimal 8 karakter.'
+    return
+  }
+
   if (!acceptedTerms.value) {
     errorMessage.value = 'Setujui ketentuan penggunaan demo untuk melanjutkan.'
     return
   }
 
-  router.push('/profile/setup')
+  submitting.value = true
+
+  try {
+    await authStore.register(name.value, email.value, password.value)
+    profileStore.reset()
+    await router.replace('/profile/setup')
+  } catch (error) {
+    errorMessage.value = userFacingApiError(
+      error,
+      'Registrasi gagal. Silakan coba kembali.',
+    )
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -172,14 +195,18 @@ const handleSubmit = () => {
             {{ errorMessage }}
           </p>
 
-          <button class="register-button" type="submit">
-            Buat akun
+          <button
+            class="register-button"
+            type="submit"
+            :disabled="submitting"
+          >
+            {{ submitting ? 'Membuat akun...' : 'Buat akun' }}
             <ion-icon aria-hidden="true" :icon="arrowForward" />
           </button>
 
           <div class="security-note">
             <ion-icon aria-hidden="true" :icon="shieldCheckmarkOutline" />
-            <span>Data registrasi hanya disimpan sebagai simulasi lokal.</span>
+            <span>Password dilindungi dan dikirim ke backend melalui API.</span>
           </div>
         </form>
 

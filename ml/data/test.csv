@@ -1,0 +1,124 @@
+menu_id,menu_name,serving_size_g,energy_kcal,protein_g,fat_g,carbohydrate_g,fiber_g,sodium_mg,meal_type
+batch-02-002,"Ubi Cilembu, Kacang Merah, dan Apel",300.0,406.6,11.02,1.36,88.52,6.96,9.6,breakfast
+batch-02-015,"Jagung Pipil, Kacang Merah, dan Apel",300.0,368.2,13.3,5.32,69.44,3.72,14.4,breakfast
+batch-02-021,"Nasi Merah, Ikan Patin, Kangkung Rebus, dan Pisang",510.0,460.4,25.11,8.15,73.37,,419.1,lunch
+batch-02-032,"Nasi, Kedelai Rebus, Wortel Kukus, dan Jeruk",500.0,486.2,22.66,8.32,85.72,5.12,236.0,lunch
+batch-02-033,"Nasi Merah, Kacang Belimbing, Daun Katuk, dan Nanas",500.0,506.0,28.18,9.52,84.5,8.2,79.4,lunch
+batch-02-036,"Nasi Merah, Ikan Baung, Kacang Panjang, dan Jeruk",515.0,397.3,24.17,6.45,64.13,,205.1,dinner
+batch-02-046,"Nasi Merah, Kacang Gude, Daun Singkong, dan Jambu",520.0,413.4,20.22,2.51,83.26,9.31,56.7,dinner
+batch-02-058,Jagung Rebus dan Pisang Ambon,160.0,200.0,4.8,1.2,43.68,2.16,12.0,snack
+batch-03-006,"Ubi Ungu, Yoghurt, dan Jambu Biji",370.0,325.0,6.93,4.29,65.96,3.72,71.2,breakfast
+batch-03-007,"Singkong Kukus, Kacang Tolo, dan Pisang",330.0,447.9,11.36,2.13,96.98,4.57,23.4,breakfast
+batch-03-021,"Nasi, Ikan Patin, Daun Katuk, dan Jambu Biji",510.0,500.6,30.85,8.13,82.03,,384.3,lunch
+batch-03-022,"Nasi Merah, Cumi, Daun Kelor, dan Nanas",500.0,570.8,48.74,10.56,72.3,3.76,171.8,lunch
+batch-03-023,"Nasi, Tahu, Daun Singkong, dan Melon",520.0,430.0,21.3,10.46,67.66,4.54,61.2,lunch
+batch-03-029,"Nasi, Mujahir Goreng, Daun Katuk, dan Jeruk",480.0,616.6,43.24,16.7,77.16,4.04,69.6,lunch
+batch-03-042,"Nasi, Tempe, Wortel, dan Nanas",495.0,536.0,18.54,19.83,76.01,5.79,111.3,dinner
+batch-03-043,"Nasi Merah, Kacang Merah, Wortel Kukus, dan Jeruk",520.0,432.5,15.45,2.77,90.59,6.49,109.5,dinner
+batch-03-044,"Nasi, Kacang Merah Segar, Daun Katuk, dan Jambu Biji",520.0,493.2,24.86,3.51,98.23,8.41,51.7,dinner
+batch-03-045,"Nasi Merah, Kacang Tolo, Daun Kelor, dan Apel",520.0,479.3,26.63,3.81,90.89,3.92,119.8,dinner
+batch-03-051,"Nasi Merah, Kacang Belimbing, Wortel Kukus, dan Melon",505.0,435.3,18.555,8.76,74.935,7.35,159.35,dinner
+batch-03-052,Yoghurt dan Melon,250.0,107.5,4.2,3.1,15.7,1.5,80.5,snack
+batch-04-008,"Jagung Rebus, Kacang Merah, dan Jambu Biji",300.0,345.8,15.14,1.86,71.12,5.44,20.8,breakfast
+batch-04-012,"Ubi Rebus, Tahu, dan Pisang Ambon",300.0,418.4,11.64,8.08,76.94,13.02,39.6,breakfast
+batch-04-016,"Nasi, Ayam Kalasan, Bayam, dan Semangka",500.0,524.0,36.62,11.72,67.3,3.04,179.0,lunch
+batch-04-018,"Nasi, Ikan Baung, Daun Katuk, dan Semangka",510.0,479.6,30.72,7.58,77.54,,191.4,lunch
+batch-04-022,"Nasi, Cumi, Kangkung, dan Semangka",500.0,516.0,42.98,10.04,64.06,4.24,167.0,lunch
+batch-04-025,"Nasi Merah, Kacang Merah, Wortel Kukus, dan Semangka",520.0,438.8,16.16,2.78,90.7,5.56,105.0,lunch
+batch-04-033,"Nasi Merah, Kacang Belimbing, Wortel, dan Semangka",500.0,426.0,18.78,8.72,72.5,6.2,129.4,lunch
+batch-04-041,"Nasi, Tahu, Wortel, dan Pisang Ambon",525.0,476.85,15.055,10.305,84.315,3.975,107.95,dinner
+batch-04-042,"Nasi Merah, Tempe, Wortel Kukus, dan Pisang Ambon",495.0,571.7,19.28,20.76,83.38,6.86,123.1,dinner
+batch-04-048,"Nasi Merah, Bebek Goreng, Kacang Panjang, dan Pisang Ambon",495.0,532.9,24.74,15.575,75.735,5.31,90.4,dinner
+batch-04-054,Ubi Ungu dan Melon,200.0,176.4,1.44,0.64,41.2,2.08,33.2,snack
+batch-04-056,Kacang Merah dan Pisang Ambon,130.0,165.4,5.95,1.09,33.54,2.82,11.0,snack
+batch-04-057,Kacang Merah Segar dan Jeruk,160.0,131.4,6.9,0.8,26.02,3.5,7.6,snack
+batch-05-004,"Talas Bogor, Tahu, dan Jambu Air",330.0,318.0,10.61,7.45,56.1,3.23,33.1,breakfast
+batch-05-008,"Jagung Rebus, Kacang Merah, dan Buah Naga Merah",300.0,367.8,15.94,4.66,68.02,6.24,20.8,breakfast
+batch-05-013,"Talas Belitung, Yoghurt, dan Kedondong",400.0,341.5,7.75,4.45,67.6,4.1,72.5,breakfast
+batch-05-014,"Suweg Kukus, Kacang Merah, dan Manggis",330.0,328.9,11.09,1.47,71.01,4.93,23.8,breakfast
+batch-05-015,"Ubi Gadung, Kacang Tolo, dan Buah Naga Merah",330.0,313.4,11.16,4.43,58.53,5.27,29.4,breakfast
+batch-05-019,"Nasi Merah, Pepes Ikan Mas, Daun Ubi Merah Kukus, dan Buah Naga Merah",500.0,529.0,23.42,13.22,83.54,6.96,131.2,lunch
+batch-05-028,"Nasi, Kacang Gude, Daun Ubi Merah Kukus, dan Buah Naga Merah",520.0,546.0,20.5,4.56,110.36,9.84,81.2,lunch
+batch-05-038,"Nasi Merah, Ikan Papuyu, Paria Putih Kukus, dan Mangga",515.0,380.3,20.5,6.065,61.225,4.57,289.3,dinner
+batch-05-041,"Nasi, Tahu, Terung Kukus, dan Mangga",525.0,409.85,17.175,8.625,69.235,2.795,30.55,dinner
+batch-05-045,"Nasi, Kacang Tolo, Daun Ubi Merah Kukus, dan Mangga",525.0,504.3,20.985,2.035,106.15,5.975,78.05,dinner
+batch-05-050,"Nasi Merah, Kedelai Rebus, Terung Kukus, dan Mangga",505.0,408.25,22.89,6.81,68.355,4.01,164.05,dinner
+batch-05-053,Yoghurt dan Mangga,220.0,114.4,4.14,2.5,18.76,1.92,43.6,snack
+batch-05-060,Tahu dan Mangga,180.0,131.4,6.66,5.1,16.26,1.98,7.8,snack
+batch-06-012,"Ubi Rebus, Tahu, dan Nangka",300.0,416.4,11.84,7.58,80.24,14.82,31.6,breakfast
+batch-06-015,"Ubi Gadung, Kacang Tolo, dan Cempedak",330.0,358.4,12.46,1.73,78.03,5.47,44.4,breakfast
+batch-06-029,"Nasi Merah, Mujahir Goreng, Sayur Lilin Terubuk, dan Alpukat",480.0,585.4,37.8,22.72,56.3,,100.4,lunch
+batch-06-036,"Nasi Merah, Ikan Baung, Lilin Bungkus Gedi, dan Jambu Bol",515.0,509.1,25.57,17.01,62.53,,523.3,dinner
+batch-06-045,"Nasi, Kacang Tolo, Sayur Bunga Pepaya, dan Jambu Bol",525.0,485.9,19.505,2.235,96.41,10.515,212.45,dinner
+batch-06-047,"Nasi, Mujahir Goreng, Tinira Ninahu Nggaluku, dan Jambu Bol",485.0,548.4,34.035,16.535,62.4,10.54,386.0,dinner
+batch-06-052,Yoghurt dan Alpukat,250.0,179.5,4.65,12.25,15.55,,43.0,snack
+batch-07-005,"Ubi Kuning, Kacang Gude, dan Buah Naga Putih",330.0,323.6,9.05,1.85,68.6,7.42,22.7,breakfast
+batch-07-013,"Talas Belitung, Yoghurt, dan Arbai",400.0,332.5,7.55,4.85,65.6,,72.45,breakfast
+batch-07-014,"Suweg Kukus, Kacang Merah, dan Jeruk Banjar",330.0,326.9,11.29,1.07,69.51,8.83,16.8,breakfast
+batch-07-018,"Nasi, Ikan Baung, Daun Oyong Segar, dan Arbai",510.0,426.6,22.42,6.28,71.34,,234.35,lunch
+batch-07-020,"Nasi, Ikan Papuyu, Gambas Segar, dan Arbai",510.0,427.8,21.84,6.75,70.29,,337.15,lunch
+batch-07-024,"Nasi, Tempe, Terong Segar, dan Arbai",490.0,544.2,20.6,20.86,72.52,,35.15,lunch
+batch-07-029,"Nasi Merah, Mujahir Goreng, Gambas Segar, dan Arbai",480.0,503.4,33.9,15.72,55.5,,86.35,lunch
+batch-07-035,"Nasi, Pepes Mujahir, Daun Oyong Segar, dan Jeruk Banjar",515.0,410.25,24.745,3.13,70.22,10.02,141.4,dinner
+batch-07-039,"Nasi, Ikan Patin, Rebung Segar, dan Jeruk Banjar",515.0,436.4,20.735,6.105,73.195,,332.85,dinner
+batch-07-046,"Nasi Merah, Kacang Gude, Gambas Segar, dan Jeruk Banjar",525.0,406.35,14.19,1.555,84.995,11.82,72.4,dinner
+batch-07-051,"Nasi, Kacang Belimbing, Daun Kol Sawi Segar, dan Jeruk Banjar",505.0,460.4,21.395,8.23,78.925,11.2,78.15,dinner
+batch-07-055,Talas Bogor dan Duwet,180.0,176.0,1.7,0.84,40.76,1.46,24.8,snack
+batch-08-002,"Ubi Gadung, Kacang Merah Segar, dan Gandaria",330.0,315.2,9.6,1.35,69.11,6.35,16.8,breakfast
+batch-08-003,"Suweg Kukus, Kacang Tolo, dan Erbis",330.0,319.9,11.41,1.03,69.83,9.77,40.4,breakfast
+batch-08-010,"Roti, Susu Skim, dan Erbis",360.0,290.8,12.4,0.92,59.1,,415.0,breakfast
+batch-08-013,"Talas Belitung, Yoghurt, dan Embacang",400.0,393.5,8.15,4.55,82.7,3.4,73.5,breakfast
+batch-08-014,"Suweg Kukus, Kacang Merah, dan Jeruk Keprok",330.0,309.9,11.29,1.17,66.31,5.03,18.8,breakfast
+batch-08-021,"Nasi Merah, Ikan Patin, Caisin Segar, dan Embacang",510.0,446.4,23.91,7.15,75.07,,386.1,lunch
+batch-08-023,"Nasi Merah, Tahu, Daun Katuk Segar, dan Embacang",520.0,509.8,27.26,11.18,86.7,5.36,58.0,lunch
+batch-08-024,"Nasi, Tempe, Caisin Segar, dan Embacang",480.0,555.6,20.4,18.16,84.64,6.58,52.2,lunch
+batch-08-031,"Nasi Merah, Ikan Lais, Daun Gelang Segar, dan Embacang",510.0,469.1,23.11,7.93,80.86,,146.8,lunch
+batch-08-038,"Nasi Merah, Ikan Papuyu, Caisin Segar, dan Jeruk Keprok",515.0,381.1,22.58,6.805,59.825,4.57,322.1,dinner
+batch-08-041,"Nasi, Tahu, Bayam Merah Segar, dan Jeruk Keprok",525.0,441.45,18.155,10.465,70.915,6.755,56.75,dinner
+batch-08-043,"Nasi, Kacang Merah, Daun Kelor Segar, dan Jeruk Keprok",525.0,594.5,25.105,5.005,112.93,22.33,146.0,dinner
+batch-08-046,"Nasi Merah, Kacang Gude, Bunga Pepaya Segar, dan Jeruk Keprok",525.0,446.55,18.15,1.875,90.595,8.68,28.2,dinner
+batch-08-055,Talas Bogor dan Gandaria,180.0,164.0,1.9,0.34,40.56,2.76,11.8,snack
+batch-08-059,Ubi Kukus dan Embacang,230.0,220.6,3.06,0.54,54.9,6.13,12.5,snack
+batch-09-002,"Ubi Gadung, Kacang Merah Segar, dan Mangga Kwini",330.0,333.2,9.6,1.75,70.91,10.65,14.8,breakfast
+batch-09-012,"Ubi Rebus, Tahu, dan Mangga Golek",300.0,373.4,11.14,7.48,69.34,13.42,32.6,breakfast
+batch-09-016,"Nasi, Ayam Kalasan, Daun Kecipir Segar, dan Kemang",500.0,588.0,44.52,11.32,77.7,,156.0,lunch
+batch-09-017,"Nasi Merah, Pepes Mujahir, Daun Kemang Segar, dan Kemang",510.0,421.7,34.89,3.8,66.62,18.86,80.2,lunch
+batch-09-019,"Nasi Merah, Pepes Ikan Mas, Daun Kesum Segar, dan Kemang",500.0,490.0,25.52,11.32,78.54,5.66,89.2,lunch
+batch-09-026,"Nasi, Kacang Merah Segar, Daun Kemang Segar, dan Kemang",520.0,494.0,25.6,2.16,99.36,22.24,29.2,lunch
+batch-09-035,"Nasi, Pepes Mujahir, Daun Kenikir Segar, dan Mangga Benggala",515.0,462.85,32.285,4.21,71.38,18.78,66.6,dinner
+batch-09-036,"Nasi Merah, Ikan Baung, Daun Kesum Segar, dan Mangga Benggala",515.0,454.9,30.51,7.53,72.59,,175.5,dinner
+batch-09-041,"Nasi, Tahu, Daun Lompong Talas Segar, dan Mangga Benggala",525.0,467.05,21.515,10.565,74.835,13.375,17.35,dinner
+batch-09-044,"Nasi Merah, Kacang Merah Segar, Daun Kenikir Segar, dan Mangga Benggala",525.0,462.7,23.12,2.89,86.135,22.215,27.4,dinner
+batch-09-050,"Nasi Merah, Kedelai Rebus, Daun Lompong Talas Segar, dan Mangga Benggala",505.0,465.45,27.23,8.75,73.955,14.59,150.85,dinner
+batch-09-052,Yoghurt dan Kemang,250.0,124.0,4.8,2.8,21.85,2.55,43.0,snack
+batch-09-056,Kacang Merah dan Mangga Gedung,170.0,131.8,5.99,0.69,27.54,3.22,5.4,snack
+batch-10-002,"Ubi Gadung, Kacang Merah Segar, dan Pisang Ayam",330.0,367.2,10.0,1.45,77.91,8.25,19.8,breakfast
+batch-10-007,"Singkong Kukus, Kacang Tolo, dan Matoa",330.0,429.9,11.56,1.43,93.78,3.17,23.4,breakfast
+batch-10-010,"Roti, Susu Skim, dan Pisang Angleng",360.0,288.8,13.1,1.12,57.4,,417.0,breakfast
+batch-10-011,"Ubi Kukus, Kacang Gude, dan Mangga Kopek",330.0,311.6,9.4,1.05,68.1,10.87,28.2,breakfast
+batch-10-022,"Nasi, Cumi, Daun Semanggi Segar, dan Mangga Indramayu",500.0,590.0,45.68,9.64,83.46,6.54,201.0,lunch
+batch-10-026,"Nasi, Kacang Merah Segar, Daun Pakis Wambateu Segar, dan Mangga Indramayu",520.0,538.0,21.2,3.96,105.56,15.84,50.2,lunch
+batch-10-031,"Nasi Merah, Ikan Lais, Daun Semanggi Segar, dan Mangga Indramayu",510.0,473.1,28.71,7.53,79.56,,264.8,lunch
+batch-10-032,"Nasi, Kedelai Rebus, Daun Singkong Segar, dan Mangga Indramayu",500.0,539.2,32.96,9.32,90.82,8.82,183.0,lunch
+batch-10-049,"Nasi, Ikan Lais, Daun Singkong Segar, dan Matoa",515.0,522.95,33.015,8.375,85.09,,169.2,dinner
+batch-10-052,Yoghurt dan Mangga Indramayu,250.0,160.0,4.5,2.8,32.05,3.75,44.5,snack
+batch-10-054,Ubi Ungu dan Pisang Gapi,200.0,289.2,2.64,0.28,69.16,14.92,8.0,snack
+batch-11-009,"Jagung Pipil, Kacang Merah Segar, dan Pisang Raja Sereh",300.0,408.0,13.86,5.3,82.04,4.34,41.8,breakfast
+batch-11-013,"Talas Belitung, Yoghurt, dan Rambutan",400.0,364.5,7.65,4.45,75.4,2.3,86.5,breakfast
+batch-11-017,"Nasi Merah, Pepes Mujahir, Daun Tespong Segar, dan Rambutan",510.0,496.7,29.59,3.7,85.62,5.76,218.2,lunch
+batch-11-024,"Nasi, Tempe, Jamur Kuping Segar, dan Rambutan",480.0,528.6,24.1,18.46,72.34,13.28,63.2,lunch
+batch-11-028,"Nasi, Kacang Gude, Daun Ubi Merah Segar, dan Rambutan",520.0,528.0,19.5,1.56,114.96,7.24,97.2,lunch
+batch-11-032,"Nasi, Kedelai Rebus, Genjer Segar, dan Rambutan",500.0,506.2,24.06,7.42,91.42,7.32,290.0,lunch
+batch-11-041,"Nasi, Tahu, Jamur Kuping Segar, dan Sirsak",525.0,418.45,21.875,10.025,64.435,14.735,47.15,dinner
+batch-11-042,"Nasi Merah, Tempe, Daun Talas Segar, dan Sirsak",485.0,543.5,21.68,17.02,86.04,12.0,27.3,dinner
+batch-11-043,"Nasi, Kacang Merah, Daun Tespong Segar, dan Sirsak",525.0,567.1,20.465,2.145,117.45,10.95,167.2,dinner
+batch-11-045,"Nasi, Kacang Tolo, Daun Ubi Merah Segar, dan Sirsak",525.0,499.7,21.065,2.335,105.31,7.355,88.05,dinner
+batch-11-047,"Nasi, Mujahir Goreng, Daun Ubi Tinta Segar, dan Sirsak",480.0,592.0,31.49,12.8,86.26,20.14,52.1,dinner
+batch-11-050,"Nasi Merah, Kedelai Rebus, Jamur Kuping Segar, dan Sirsak",505.0,416.85,27.59,8.21,63.555,15.95,180.65,dinner
+batch-11-052,Yoghurt dan Rambutan,250.0,155.5,4.65,2.65,31.15,1.2,64.0,snack
+batch-11-055,Talas Bogor dan Pisang Raja Sereh,200.0,225.6,2.76,0.6,56.4,1.4,46.0,snack
+batch-11-057,Kacang Merah Segar dan Salak Medan,160.0,141.4,6.4,0.8,27.62,5.3,42.6,snack
+pilot-003,"Ubi Kuning, Yoghurt, dan Apel",400.0,285.0,6.5,4.6,54.5,2.3,68.1,breakfast
+pilot-005,"Jagung, Tahu, dan Jeruk",300.0,321.8,13.22,11.2,47.28,2.32,15.6,breakfast
+pilot-010,"Nasi Merah, Ikan Baung, Buncis, dan Apel",510.0,425.4,24.28,6.5,69.28,,174.8,lunch
+pilot-017,"Nasi, Ikan Patin, Kangkung, dan Nanas",510.0,447.6,25.05,7.43,71.13,,411.3,lunch

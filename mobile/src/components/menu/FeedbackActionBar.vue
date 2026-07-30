@@ -1,23 +1,26 @@
 <script setup lang="ts">
-import { IonIcon } from '@ionic/vue'
+import { IonIcon, IonSpinner } from '@ionic/vue'
 import {
   checkmarkCircle,
   checkmarkCircleOutline,
-  repeatOutline,
   thumbsDown,
   thumbsDownOutline,
   thumbsUp,
   thumbsUpOutline,
 } from 'ionicons/icons'
-import type { FeedbackAction } from '@/types/domain'
+import type {
+  FeedbackAction,
+  UserMenuFeedback,
+} from '@/types/domain'
 
 defineProps<{
-  activeFeedback: FeedbackAction | null
+  feedback: UserMenuFeedback | null
+  loading: boolean
+  saving: boolean
 }>()
 
 defineEmits<{
   feedback: [action: FeedbackAction]
-  replace: []
 }>()
 </script>
 
@@ -26,16 +29,17 @@ defineEmits<{
     <div class="action-bar__inner">
       <button
         class="feedback-button"
-        :class="{ 'feedback-button--active': activeFeedback === 'like' }"
+        :class="{ 'feedback-button--active': feedback?.liked }"
         type="button"
         aria-label="Suka menu ini"
-        :aria-pressed="activeFeedback === 'like'"
+        :aria-pressed="feedback?.liked ?? false"
+        :disabled="loading || saving || !feedback"
         @click="$emit('feedback', 'like')"
       >
         <span>
           <ion-icon
             aria-hidden="true"
-            :icon="activeFeedback === 'like' ? thumbsUp : thumbsUpOutline"
+            :icon="feedback?.liked ? thumbsUp : thumbsUpOutline"
           />
         </span>
         Suka
@@ -43,16 +47,17 @@ defineEmits<{
 
       <button
         class="feedback-button feedback-button--dislike"
-        :class="{ 'feedback-button--active': activeFeedback === 'dislike' }"
+        :class="{ 'feedback-button--active': feedback?.disliked }"
         type="button"
         aria-label="Tidak suka menu ini"
-        :aria-pressed="activeFeedback === 'dislike'"
+        :aria-pressed="feedback?.disliked ?? false"
+        :disabled="loading || saving || !feedback"
         @click="$emit('feedback', 'dislike')"
       >
         <span>
           <ion-icon
             aria-hidden="true"
-            :icon="activeFeedback === 'dislike' ? thumbsDown : thumbsDownOutline"
+            :icon="feedback?.disliked ? thumbsDown : thumbsDownOutline"
           />
         </span>
         Tidak suka
@@ -60,17 +65,18 @@ defineEmits<{
 
       <button
         class="feedback-button feedback-button--consumed"
-        :class="{ 'feedback-button--active': activeFeedback === 'consumed' }"
+        :class="{ 'feedback-button--active': feedback?.consumed }"
         type="button"
         aria-label="Tandai menu telah dikonsumsi"
-        :aria-pressed="activeFeedback === 'consumed'"
+        :aria-pressed="feedback?.consumed ?? false"
+        :disabled="loading || saving || !feedback"
         @click="$emit('feedback', 'consumed')"
       >
         <span>
           <ion-icon
             aria-hidden="true"
             :icon="
-              activeFeedback === 'consumed'
+              feedback?.consumed
                 ? checkmarkCircle
                 : checkmarkCircleOutline
             "
@@ -79,10 +85,10 @@ defineEmits<{
         Dikonsumsi
       </button>
 
-      <button class="replace-button" type="button" @click="$emit('replace')">
-        <ion-icon aria-hidden="true" :icon="repeatOutline" />
-        Ganti menu
-      </button>
+      <div v-if="saving" class="saving-indicator" aria-live="polite">
+        <ion-spinner name="crescent" />
+        Menyimpan
+      </div>
     </div>
   </div>
 </template>
@@ -97,33 +103,36 @@ defineEmits<{
 }
 
 .action-bar__inner {
-  align-items: stretch;
+  align-items: center;
   display: grid;
   gap: 7px;
-  grid-template-columns: 48px 54px 58px minmax(116px, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   margin: 0 auto;
   max-width: calc(var(--app-mobile-width) - (var(--app-space-4) * 2));
-}
-
-button {
-  appearance: none;
-  cursor: pointer;
-  font-family: inherit;
+  position: relative;
 }
 
 .feedback-button {
   align-items: center;
+  appearance: none;
   background: transparent;
   border: 0;
   color: var(--app-text-muted);
+  cursor: pointer;
   display: flex;
   flex-direction: column;
-  font-size: 0.55rem;
+  font-family: inherit;
+  font-size: 0.56rem;
   font-weight: 750;
   gap: 4px;
   justify-content: center;
   min-width: 0;
   padding: 0;
+}
+
+.feedback-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .feedback-button > span {
@@ -134,7 +143,7 @@ button {
   display: inline-flex;
   height: 36px;
   justify-content: center;
-  width: 36px;
+  width: 42px;
 }
 
 .feedback-button ion-icon {
@@ -168,27 +177,23 @@ button {
   border-color: #f4d7aa;
 }
 
-.replace-button {
+.saving-indicator {
   align-items: center;
-  background: var(--ion-color-primary);
-  border: 0;
-  border-radius: var(--app-radius-md);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: var(--app-radius-pill);
+  color: var(--app-text-muted);
   display: flex;
-  font-size: 0.75rem;
-  font-weight: 850;
-  gap: 7px;
-  justify-content: center;
-  min-height: 52px;
-  padding: 0 var(--app-space-3);
+  font-size: 0.54rem;
+  gap: 5px;
+  left: 50%;
+  padding: 5px 8px;
+  position: absolute;
+  top: -30px;
+  transform: translateX(-50%);
 }
 
-.replace-button:active {
-  background: var(--ion-color-primary-shade);
-  transform: scale(0.98);
-}
-
-.replace-button ion-icon {
-  font-size: 1rem;
+.saving-indicator ion-spinner {
+  height: 12px;
+  width: 12px;
 }
 </style>

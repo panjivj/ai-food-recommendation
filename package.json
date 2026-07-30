@@ -1,0 +1,14 @@
+{
+  "name": "ai-food-recommendation-local",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/dev-local.mjs",
+    "dev:setup": "node scripts/dev-local.mjs --setup-only",
+    "test": "npm --prefix backend test && npm --prefix mobile run test:unit -- --run"
+  }
+}

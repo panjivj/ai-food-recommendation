@@ -48,6 +48,9 @@ const allergies = computed(
 const dislikedFoods = computed(
   () => demoStore.user.dislikedFoods.join(', ') || 'Tidak ada',
 )
+const foodPreferences = computed(
+  () => demoStore.user.foodPreferences.join(', ') || 'Tidak ada',
+)
 </script>
 
 <template>
@@ -56,12 +59,12 @@ const dislikedFoods = computed(
       <main class="profile-page">
         <header class="profile-header">
           <div>
-            <p>Akun demo</p>
+            <p>Akun pengguna</p>
             <h1>Profil saya</h1>
           </div>
           <span class="profile-header__status">
             <ion-icon aria-hidden="true" :icon="shieldCheckmarkOutline" />
-            Data lokal
+            Tersimpan
           </span>
         </header>
 
@@ -188,7 +191,7 @@ const dislikedFoods = computed(
               </span>
               <div>
                 <small>Preferensi</small>
-                <strong>Makanan rumahan</strong>
+                <strong>{{ foodPreferences }}</strong>
               </div>
             </article>
           </div>

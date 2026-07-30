@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { IonContent, IonIcon, IonPage } from '@ionic/vue'
 import {
@@ -13,10 +13,15 @@ import {
   saveOutline,
 } from 'ionicons/icons'
 import { useDemoStore } from '@/stores/demo'
-import type { DemoUser } from '@/types/domain'
+import { userFacingApiError } from '@/services/api/client'
+import { useAuthStore } from '@/stores/auth'
+import { useProfileStore } from '@/stores/profile'
+import type { DemoUser, UserProfile } from '@/types/domain'
 
 const router = useRouter()
 const demoStore = useDemoStore()
+const authStore = useAuthStore()
+const profileStore = useProfileStore()
 
 const name = ref(demoStore.user.name)
 const email = ref(demoStore.user.email)
@@ -34,6 +39,23 @@ const healthCondition = ref(
 const allergy = ref(demoStore.user.allergies[0] ?? 'Tidak ada')
 const dislikedFood = ref(demoStore.user.dislikedFoods[0] ?? '')
 const foodPreference = ref('Makanan rumahan')
+const errorMessage = ref('')
+const saving = ref(false)
+
+const hydrateForm = (profile: UserProfile) => {
+  name.value = profile.name
+  email.value = authStore.user?.email ?? email.value
+  age.value = profile.age
+  gender.value = profile.gender
+  heightCm.value = profile.heightCm
+  weightKg.value = profile.weightKg
+  activityLevel.value = profile.activityLevel
+  goal.value = profile.goal
+  healthCondition.value = profile.healthConditions[0] ?? 'Tidak ada'
+  allergy.value = profile.allergies[0] ?? 'Tidak ada'
+  dislikedFood.value = profile.dislikedFoods[0] ?? ''
+  foodPreference.value = profile.foodPreferences[0] ?? 'Makanan rumahan'
+}
 
 const resetForm = () => {
   name.value = demoStore.user.name
@@ -50,25 +72,52 @@ const resetForm = () => {
   dislikedFood.value = demoStore.user.dislikedFoods[0] ?? ''
 }
 
-const saveProfile = () => {
-  demoStore.user.name = name.value.trim()
-  demoStore.user.email = email.value.trim()
-  demoStore.user.age = age.value
-  demoStore.user.gender = gender.value
-  demoStore.user.heightCm = heightCm.value
-  demoStore.user.weightKg = weightKg.value
-  demoStore.user.activityLevel = activityLevel.value
-  demoStore.user.goal = goal.value
-  demoStore.user.healthConditions =
-    healthCondition.value === 'Tidak ada' ? [] : [healthCondition.value]
-  demoStore.user.allergies =
-    allergy.value === 'Tidak ada' ? [] : [allergy.value]
-  demoStore.user.dislikedFoods = dislikedFood.value.trim()
-    ? [dislikedFood.value.trim()]
-    : []
+const saveProfile = async () => {
+  errorMessage.value = ''
+  saving.value = true
 
-  router.replace('/app/profile')
+  try {
+    await profileStore.update({
+      name: name.value,
+      age: age.value,
+      gender: gender.value,
+      heightCm: heightCm.value,
+      weightKg: weightKg.value,
+      activityLevel: activityLevel.value,
+      goal: goal.value,
+      healthConditions:
+        healthCondition.value === 'Tidak ada' ? [] : [healthCondition.value],
+      allergies: allergy.value === 'Tidak ada' ? [] : [allergy.value],
+      dislikedFoods: dislikedFood.value.trim()
+        ? [dislikedFood.value.trim()]
+        : [],
+      foodPreferences: [foodPreference.value],
+    })
+    await router.replace('/app/profile')
+  } catch (error) {
+    errorMessage.value = userFacingApiError(
+      error,
+      'Perubahan profil gagal disimpan.',
+    )
+  } finally {
+    saving.value = false
+  }
 }
+
+onMounted(async () => {
+  try {
+    const profile = profileStore.profile ?? (await profileStore.fetch())
+
+    if (profile) {
+      hydrateForm(profile)
+    }
+  } catch (error) {
+    errorMessage.value = userFacingApiError(
+      error,
+      'Profil gagal dimuat dari server.',
+    )
+  }
+})
 </script>
 
 <template>
@@ -130,7 +179,12 @@ const saveProfile = () => {
                 <span>Alamat email</span>
                 <span class="text-input">
                   <ion-icon aria-hidden="true" :icon="mailOutline" />
-                  <input v-model="email" type="email" aria-label="Alamat email" />
+                  <input
+                    v-model="email"
+                    type="email"
+                    aria-label="Alamat email"
+                    readonly
+                  />
                 </span>
               </label>
             </div>
@@ -183,6 +237,7 @@ const saveProfile = () => {
                   <input
                     v-model.number="heightCm"
                     type="number"
+                    step="0.1"
                     aria-label="Tinggi badan"
                   />
                   <small>cm</small>
@@ -194,6 +249,7 @@ const saveProfile = () => {
                   <input
                     v-model.number="weightKg"
                     type="number"
+                    step="0.1"
                     aria-label="Berat badan"
                   />
                   <small>kg</small>
@@ -267,13 +323,17 @@ const saveProfile = () => {
             </div>
           </section>
 
-          <button class="save-button" type="submit">
+          <p v-if="errorMessage" class="form-error" role="alert">
+            {{ errorMessage }}
+          </p>
+
+          <button class="save-button" type="submit" :disabled="saving">
             <ion-icon aria-hidden="true" :icon="saveOutline" />
-            Simpan perubahan
+            {{ saving ? 'Menyimpan...' : 'Simpan perubahan' }}
           </button>
 
           <p class="local-note">
-            Data hanya diperbarui pada state lokal untuk kebutuhan demo UI.
+            Perubahan disimpan pada profil akun di backend.
           </p>
         </form>
       </main>
@@ -611,6 +671,19 @@ select:focus,
 .save-button:active {
   background: var(--ion-color-primary-shade);
   transform: scale(0.99);
+}
+
+.save-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.form-error {
+  color: var(--ion-color-danger);
+  font-size: 0.62rem;
+  line-height: 1.45;
+  margin: var(--app-space-2) 0 0;
+  text-align: center;
 }
 
 .local-note {

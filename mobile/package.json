@@ -16,6 +16,7 @@
     "@capacitor/core": "8.4.2",
     "@capacitor/haptics": "8.0.2",
     "@capacitor/keyboard": "8.0.5",
+    "@capacitor/preferences": "^8.0.1",
     "@capacitor/status-bar": "8.0.3",
     "@ionic/vue": "^8.0.0",
     "@ionic/vue-router": "^8.0.0",
@@ -26,19 +27,23 @@
   },
   "devDependencies": {
     "@capacitor/cli": "8.4.2",
-    "@vitejs/plugin-legacy": "^5.0.0",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "@vue/eslint-config-typescript": "^12.0.0",
-    "@vue/test-utils": "^2.3.0",
-    "cypress": "^13.5.0",
-    "eslint": "^8.35.0",
-    "eslint-plugin-vue": "^9.9.0",
+    "@vitejs/plugin-legacy": "^7.2.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "cypress": "^15.19.0",
+    "eslint": "^10.8.0",
+    "eslint-plugin-vue": "^10.10.0",
     "jsdom": "^22.1.0",
     "terser": "^5.4.0",
     "typescript": "~5.9.0",
-    "vite": "^5.0.0",
-    "vitest": "^0.34.6",
-    "vue-tsc": "^2.1.10"
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7",
+    "vue-tsc": "^3.3.8"
   },
-  "description": "Demo UI aplikasi rekomendasi makanan berbasis Ionic Vue"
+  "description": "Demo UI aplikasi rekomendasi makanan berbasis Ionic Vue",
+  "allowScripts": {
+    "core-js@3.49.0": true,
+    "cypress@15.19.0": true,
+    "esbuild@0.28.1": true
+  }
 }

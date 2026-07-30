@@ -6,193 +6,565 @@ import {
   IonFooter,
   IonIcon,
   IonPage,
+  IonSpinner,
   IonToast,
+  onIonViewWillEnter,
 } from '@ionic/vue'
 import {
+  alertCircleOutline,
   arrowBack,
   checkmark,
+  flaskOutline,
+  hardwareChipOutline,
+  informationCircleOutline,
+  refreshOutline,
+  restaurantOutline,
   ribbonOutline,
+  scaleOutline,
+  shieldCheckmarkOutline,
   sparkles,
-  timeOutline,
 } from 'ionicons/icons'
-import FeedbackActionBar from '@/components/menu/FeedbackActionBar.vue'
 import NutritionGrid from '@/components/menu/NutritionGrid.vue'
-import { demoMenus } from '@/mocks/menus'
-import { useDemoStore } from '@/stores/demo'
-import type { FeedbackAction, MealType } from '@/types/domain'
+import FeedbackActionBar from '@/components/menu/FeedbackActionBar.vue'
+import { useFeedbackStore } from '@/stores/feedback'
+import { useMenuDetailStore } from '@/stores/menu-detail'
+import { useRecommendationStore } from '@/stores/recommendation'
+import type {
+  DailyRecommendationItem,
+  FeedbackAction,
+  MenuMealType,
+} from '@/types/domain'
 
 const route = useRoute()
 const router = useRouter()
-const demoStore = useDemoStore()
-
+const menuDetailStore = useMenuDetailStore()
+const recommendationStore = useRecommendationStore()
+const feedbackStore = useFeedbackStore()
 const toastOpen = ref(false)
 const toastMessage = ref('')
 
-const mealLabels: Record<MealType, string> = {
+const mealLabels: Record<MenuMealType, string> = {
   breakfast: 'Sarapan',
   lunch: 'Makan siang',
   dinner: 'Makan malam',
+  snack: 'Camilan',
+  all_day: 'Sepanjang hari',
 }
 
-const menu = computed(
-  () =>
-    demoMenus.find((candidate) => candidate.id === route.params.menuId) ??
-    demoMenus[0],
-)
-
-const activeFeedback = computed(
-  () => demoStore.feedback[menu.value.id] ?? null,
-)
-
-const showToast = (message: string) => {
-  toastMessage.value = message
-  toastOpen.value = true
+const allergenLabels: Record<string, string> = {
+  egg: 'Telur',
+  fish: 'Ikan',
+  milk: 'Susu',
+  peanut: 'Kacang tanah',
+  shellfish: 'Krustasea dan kerang',
+  soy: 'Kedelai',
+  tree_nut: 'Kacang pohon',
+  wheat: 'Gandum',
 }
 
-const handleFeedback = (action: FeedbackAction) => {
-  demoStore.setFeedback(menu.value.id, action)
+const menuId = computed(() => {
+  const value = route.params.menuId
+  return Array.isArray(value) ? value[0] ?? '' : String(value ?? '')
+})
 
-  if (!demoStore.feedback[menu.value.id]) {
-    showToast('Feedback dibatalkan.')
+const recommendationDate = computed(() =>
+  typeof route.query.date === 'string' ? route.query.date : null,
+)
+
+const recommendationContext = computed<DailyRecommendationItem | null>(() => {
+  const recommendation = recommendationStore.recommendation
+
+  if (
+    !recommendation ||
+    !recommendationDate.value ||
+    recommendation.date !== recommendationDate.value
+  ) {
+    return null
+  }
+
+  return (
+    recommendation.items.find((item) => item.menu.id === menuId.value) ?? null
+  )
+})
+
+const scoreParts = computed(() => {
+  const score = recommendationContext.value?.score
+  if (!score) return []
+
+  return [
+    {
+      label: 'Kecocokan kalori',
+      maximum: 75,
+      value: score.breakdown.calorieFit,
+    },
+    {
+      label: 'Kecocokan preferensi',
+      maximum: 20,
+      value: score.breakdown.preferenceMatch,
+    },
+    {
+      label: 'Variasi harian',
+      maximum: 5,
+      value: score.breakdown.dailyRotation,
+    },
+  ]
+})
+
+const loadRecommendationContext = async () => {
+  if (!recommendationDate.value) return
+
+  const current = recommendationStore.recommendation
+  const alreadyLoaded =
+    current?.date === recommendationDate.value &&
+    current.items.some((item) => item.menu.id === menuId.value)
+
+  if (!alreadyLoaded) {
+    await recommendationStore.fetch(recommendationDate.value)
+  }
+}
+
+const loadDetail = async () => {
+  await Promise.all([
+    menuDetailStore.fetch(menuId.value),
+    loadRecommendationContext(),
+    feedbackStore.fetch(menuId.value),
+  ])
+}
+
+const handleFeedback = async (action: FeedbackAction) => {
+  const feedback = await feedbackStore.toggle(action)
+
+  if (!feedback) {
+    toastMessage.value =
+      feedbackStore.errorMessage ??
+      'Feedback belum dapat disimpan. Silakan coba kembali.'
+    toastOpen.value = true
     return
   }
 
   const messages: Record<FeedbackAction, string> = {
-    like: 'Menu ditambahkan ke pilihan yang kamu sukai.',
-    dislike: 'Preferensimu telah diperbarui.',
-    consumed: 'Menu ditandai sudah dikonsumsi.',
+    like: feedback.liked
+      ? 'Menu ditandai sebagai menu yang kamu sukai.'
+      : 'Status suka dibatalkan.',
+    dislike: feedback.disliked
+      ? 'Menu akan dihindari pada rekomendasi baru berikutnya.'
+      : 'Status tidak suka dibatalkan.',
+    consumed: feedback.consumed
+      ? 'Menu ditandai sudah dikonsumsi.'
+      : 'Status konsumsi dibatalkan.',
   }
 
-  showToast(messages[action])
+  toastMessage.value = messages[action]
+  toastOpen.value = true
 }
 
-const replaceMenu = () => {
-  router.push({
-    name: 'recommendations',
-    query: { replace: menu.value.id },
+const loadAiExplanation = async () => {
+  const context = recommendationContext.value
+  const date = recommendationDate.value
+
+  if (!context || !date) return
+
+  await menuDetailStore.fetchAiExplanation({
+    date,
+    mealType: context.mealType,
+    menuId: context.menu.id,
   })
 }
+
+const formatNumber = (value: number, maximumFractionDigits = 1) =>
+  value.toLocaleString('id-ID', { maximumFractionDigits })
+
+const formatAllergen = (name: string) =>
+  allergenLabels[name] ??
+  name.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
+
+const formatRole = (role: string) =>
+  role.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
+
+onIonViewWillEnter(() => {
+  void loadDetail()
+})
 </script>
 
 <template>
   <ion-page>
     <ion-content :fullscreen="true">
       <main class="menu-detail">
-        <section class="hero">
-          <img
-            v-if="menu.imageUrl"
-            :src="menu.imageUrl"
-            :alt="menu.name"
-            class="hero__image"
-            height="300"
-            width="400"
-          />
-          <div v-else class="hero__fallback" aria-hidden="true" />
-          <div class="hero__shade" aria-hidden="true" />
-
-          <button
-            class="hero__back"
-            type="button"
-            aria-label="Kembali"
-            @click="router.back()"
-          >
+        <header
+          v-if="menuDetailStore.loading"
+          class="page-status"
+          aria-live="polite"
+        >
+          <button type="button" class="back-button" @click="router.back()">
             <ion-icon aria-hidden="true" :icon="arrowBack" />
+            Kembali
           </button>
+          <ion-spinner name="crescent" />
+          <h1>Memuat detail menu</h1>
+          <p>Informasi bahan dan nilai gizi sedang disiapkan.</p>
+        </header>
 
-          <span class="hero__recommendation-badge">
-            <ion-icon aria-hidden="true" :icon="ribbonOutline" />
-            Pilihan terbaik
+        <header
+          v-else-if="menuDetailStore.errorMessage"
+          class="page-status page-status--error"
+          aria-live="polite"
+        >
+          <button type="button" class="back-button" @click="router.back()">
+            <ion-icon aria-hidden="true" :icon="arrowBack" />
+            Kembali
+          </button>
+          <span class="page-status__icon">
+            <ion-icon aria-hidden="true" :icon="alertCircleOutline" />
           </span>
-        </section>
+          <h1>Detail menu tidak tersedia</h1>
+          <p>{{ menuDetailStore.errorMessage }}</p>
+          <button type="button" class="retry-button" @click="loadDetail">
+            <ion-icon aria-hidden="true" :icon="refreshOutline" />
+            Coba lagi
+          </button>
+        </header>
 
-        <article class="detail-sheet">
-          <header class="menu-heading">
-            <span class="meal-label">{{ mealLabels[menu.mealType] }}</span>
-            <h1>{{ menu.name }}</h1>
-            <p>{{ menu.description }}</p>
-
-            <div class="menu-meta">
-              <span>
-                <ion-icon aria-hidden="true" :icon="timeOutline" />
-                {{ menu.preparationMinutes }} menit
-              </span>
-              <span aria-hidden="true">•</span>
-              <span>{{ menu.nutrition.fiberG }} g serat</span>
-              <span aria-hidden="true">•</span>
-              <span>{{ menu.nutrition.sodiumMg }} mg natrium</span>
+        <template v-else-if="menuDetailStore.menu">
+          <section class="hero">
+            <div class="hero__pattern" aria-hidden="true">
+              <ion-icon :icon="restaurantOutline" />
             </div>
-          </header>
+            <div class="hero__shade" aria-hidden="true" />
 
-          <nutrition-grid :nutrition="menu.nutrition" />
+            <button
+              class="hero__back"
+              type="button"
+              aria-label="Kembali"
+              @click="router.back()"
+            >
+              <ion-icon aria-hidden="true" :icon="arrowBack" />
+            </button>
 
-          <section class="explanation-card" aria-labelledby="explanation-title">
-            <span class="explanation-card__icon">
-              <ion-icon aria-hidden="true" :icon="sparkles" />
+            <span v-if="recommendationContext" class="hero__badge">
+              <ion-icon aria-hidden="true" :icon="ribbonOutline" />
+              Direkomendasikan untukmu
             </span>
-            <div>
-              <p>Alasan rekomendasi</p>
-              <h2 id="explanation-title">Mengapa menu ini cocok?</h2>
-              <blockquote>{{ menu.explanation }}</blockquote>
-              <small>
-                Penjelasan bersifat edukatif dan bukan diagnosis medis.
-              </small>
-            </div>
           </section>
 
-          <section class="content-section" aria-labelledby="ingredients-title">
-            <div class="content-section__heading">
-              <div>
-                <p>Yang dibutuhkan</p>
-                <h2 id="ingredients-title">Bahan makanan</h2>
-              </div>
-              <span>{{ menu.ingredients.length }} bahan</span>
-            </div>
+          <article class="detail-sheet">
+            <header class="menu-heading">
+              <span class="meal-label">
+                {{ mealLabels[menuDetailStore.menu.mealType] }}
+              </span>
+              <h1>{{ menuDetailStore.menu.name }}</h1>
+              <p>{{ menuDetailStore.menu.description }}</p>
 
-            <ul class="ingredient-list">
-              <li v-for="ingredient in menu.ingredients" :key="ingredient">
-                <span>
-                  <ion-icon aria-hidden="true" :icon="checkmark" />
+              <div class="serving-card">
+                <ion-icon aria-hidden="true" :icon="scaleOutline" />
+                <div>
+                  <span>Porsi penyajian</span>
+                  <strong>{{ menuDetailStore.menu.servingDescription }}</strong>
+                </div>
+                <b>
+                  {{ formatNumber(menuDetailStore.menu.servingSizeG) }} g
+                </b>
+              </div>
+
+              <div v-if="menuDetailStore.menu.tags.length" class="tag-list">
+                <span
+                  v-for="tag in menuDetailStore.menu.tags"
+                  :key="tag"
+                >
+                  #{{ tag }}
                 </span>
-                {{ ingredient }}
-              </li>
-            </ul>
-          </section>
-
-          <section class="content-section" aria-labelledby="steps-title">
-            <div class="content-section__heading">
-              <div>
-                <p>Mudah diikuti</p>
-                <h2 id="steps-title">Cara persiapan</h2>
               </div>
-              <span>{{ menu.instructions.length }} langkah</span>
-            </div>
+            </header>
 
-            <ol class="instruction-list">
-              <li
-                v-for="(instruction, index) in menu.instructions"
-                :key="instruction"
+            <nutrition-grid :nutrition="menuDetailStore.menu.nutrition" />
+
+            <section
+              v-if="recommendationContext"
+              class="recommendation-detail"
+              aria-labelledby="recommendation-score-title"
+            >
+              <div class="recommendation-detail__heading">
+                <span>
+                  <ion-icon aria-hidden="true" :icon="sparkles" />
+                </span>
+                <div>
+                  <p>Alasan rekomendasi</p>
+                  <h2 id="recommendation-score-title">
+                    Mengapa menu ini dipilih?
+                  </h2>
+                </div>
+                <strong>
+                  {{ formatNumber(recommendationContext.score.total, 2) }}
+                  <small>/ 100</small>
+                </strong>
+              </div>
+
+              <div class="target-summary">
+                <div>
+                  <span>Target slot</span>
+                  <strong>
+                    {{ formatNumber(recommendationContext.targetCalories) }}
+                    kkal
+                  </strong>
+                </div>
+                <div>
+                  <span>Kalori menu</span>
+                  <strong>
+                    {{
+                      formatNumber(
+                        recommendationContext.menu.nutrition.energyKcal,
+                      )
+                    }}
+                    kkal
+                  </strong>
+                </div>
+                <div>
+                  <span>Selisih</span>
+                  <strong>
+                    {{ formatNumber(recommendationContext.score.calorieDifference) }}
+                    kkal
+                  </strong>
+                </div>
+              </div>
+
+              <div class="score-breakdown">
+                <div
+                  v-for="part in scoreParts"
+                  :key="part.label"
+                  class="score-part"
+                >
+                  <div>
+                    <span>{{ part.label }}</span>
+                    <strong>
+                      {{ formatNumber(part.value, 2) }} / {{ part.maximum }}
+                    </strong>
+                  </div>
+                  <div class="score-bar" aria-hidden="true">
+                    <span
+                      :style="{
+                        width: `${Math.min(100, (part.value / part.maximum) * 100)}%`,
+                      }"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <ul class="reason-list">
+                <li
+                  v-for="reason in recommendationContext.reasons"
+                  :key="reason.code"
+                >
+                  <span>
+                    <ion-icon aria-hidden="true" :icon="checkmark" />
+                  </span>
+                  {{ reason.message }}
+                </li>
+              </ul>
+
+              <section
+                class="ai-explanation"
+                aria-labelledby="ai-explanation-title"
               >
-                <span>{{ index + 1 }}</span>
-                <p>{{ instruction }}</p>
-              </li>
-            </ol>
-          </section>
-        </article>
+                <header>
+                  <span>
+                    <ion-icon
+                      aria-hidden="true"
+                      :icon="hardwareChipOutline"
+                    />
+                  </span>
+                  <div>
+                    <p>Didukung OpenRouter</p>
+                    <h3 id="ai-explanation-title">Penjelasan AI</h3>
+                  </div>
+                  <b>AI</b>
+                </header>
+
+                <div
+                  v-if="menuDetailStore.aiLoading"
+                  class="ai-explanation__state"
+                  aria-live="polite"
+                >
+                  <ion-spinner name="crescent" />
+                  <strong>Menyusun penjelasan personal</strong>
+                  <p>
+                    AI membaca hasil skor yang sudah diverifikasi oleh backend.
+                  </p>
+                </div>
+
+                <div
+                  v-else-if="menuDetailStore.aiErrorMessage"
+                  class="ai-explanation__state ai-explanation__state--error"
+                  aria-live="polite"
+                >
+                  <ion-icon
+                    aria-hidden="true"
+                    :icon="alertCircleOutline"
+                  />
+                  <strong>Penjelasan belum tersedia</strong>
+                  <p>{{ menuDetailStore.aiErrorMessage }}</p>
+                  <button type="button" @click="loadAiExplanation">
+                    <ion-icon aria-hidden="true" :icon="refreshOutline" />
+                    Coba lagi
+                  </button>
+                </div>
+
+                <div
+                  v-else-if="menuDetailStore.aiExplanation"
+                  class="ai-explanation__result"
+                >
+                  <p>{{ menuDetailStore.aiExplanation.summary }}</p>
+                  <ul>
+                    <li
+                      v-for="highlight in menuDetailStore.aiExplanation
+                        .highlights"
+                      :key="highlight.title"
+                    >
+                      <span>
+                        <ion-icon aria-hidden="true" :icon="sparkles" />
+                      </span>
+                      <div>
+                        <strong>{{ highlight.title }}</strong>
+                        <p>{{ highlight.detail }}</p>
+                      </div>
+                    </li>
+                  </ul>
+                  <aside>
+                    <ion-icon
+                      aria-hidden="true"
+                      :icon="informationCircleOutline"
+                    />
+                    <span>{{ menuDetailStore.aiExplanation.disclaimer }}</span>
+                  </aside>
+                  <small>
+                    Model: {{ menuDetailStore.aiExplanation.model }}
+                  </small>
+                </div>
+
+                <div v-else class="ai-explanation__intro">
+                  <p>
+                    Dapatkan penjelasan personal berdasarkan profil, target
+                    kalori, komposisi menu, dan rincian skor yang telah
+                    diverifikasi.
+                  </p>
+                  <button type="button" @click="loadAiExplanation">
+                    <ion-icon aria-hidden="true" :icon="sparkles" />
+                    Buat Penjelasan AI
+                  </button>
+                  <small>
+                    AI tidak dapat mengubah nilai gizi atau keputusan filter
+                    alergi.
+                  </small>
+                </div>
+              </section>
+            </section>
+
+            <aside
+              v-else-if="recommendationDate && !recommendationStore.loading"
+              class="context-note"
+            >
+              <ion-icon aria-hidden="true" :icon="alertCircleOutline" />
+              <p>
+                Detail katalog berhasil dimuat, tetapi konteks skor rekomendasi
+                untuk tanggal ini tidak dapat dipulihkan.
+              </p>
+            </aside>
+
+            <section class="content-section" aria-labelledby="ingredients-title">
+              <div class="content-section__heading">
+                <div>
+                  <p>Komposisi menu</p>
+                  <h2 id="ingredients-title">Bahan makanan</h2>
+                </div>
+                <span>{{ menuDetailStore.menu.ingredients.length }} bahan</span>
+              </div>
+
+              <ul class="ingredient-list">
+                <li
+                  v-for="ingredient in menuDetailStore.menu.ingredients"
+                  :key="`${ingredient.tkpiCode}-${ingredient.name}`"
+                >
+                  <span class="ingredient-list__check">
+                    <ion-icon aria-hidden="true" :icon="checkmark" />
+                  </span>
+                  <div>
+                    <strong>{{ ingredient.name }}</strong>
+                    <p>
+                      {{ formatNumber(ingredient.amountG) }} g
+                      · {{ formatRole(ingredient.componentRole) }}
+                    </p>
+                    <small v-if="ingredient.preparationNote">
+                      {{ ingredient.preparationNote }}
+                    </small>
+                    <small>
+                      TKPI {{ ingredient.tkpiCode }} ·
+                      {{ ingredient.sourceReference }}
+                    </small>
+                  </div>
+                </li>
+              </ul>
+            </section>
+
+            <section class="content-section" aria-labelledby="allergens-title">
+              <div class="content-section__heading">
+                <div>
+                  <p>Informasi keamanan</p>
+                  <h2 id="allergens-title">Alergen</h2>
+                </div>
+                <span>{{ menuDetailStore.menu.allergens.length }} tercatat</span>
+              </div>
+
+              <div
+                v-if="menuDetailStore.menu.allergens.length"
+                class="allergen-list"
+              >
+                <article
+                  v-for="allergen in menuDetailStore.menu.allergens"
+                  :key="allergen.name"
+                >
+                  <ion-icon aria-hidden="true" :icon="alertCircleOutline" />
+                  <div>
+                    <strong>{{ formatAllergen(allergen.name) }}</strong>
+                    <p>{{ allergen.evidence }}</p>
+                  </div>
+                </article>
+              </div>
+              <div v-else class="allergen-empty">
+                <ion-icon aria-hidden="true" :icon="shieldCheckmarkOutline" />
+                <p>Tidak ada alergen yang tercatat pada data menu ini.</p>
+              </div>
+            </section>
+
+            <aside class="source-card">
+              <ion-icon aria-hidden="true" :icon="flaskOutline" />
+              <div>
+                <span>Sumber perhitungan gizi</span>
+                <strong>{{ menuDetailStore.menu.nutritionSource }}</strong>
+                <small>
+                  Versi perhitungan:
+                  {{ menuDetailStore.menu.calculationVersion }}
+                </small>
+              </div>
+            </aside>
+          </article>
+        </template>
       </main>
     </ion-content>
 
-    <ion-footer class="detail-footer">
+    <ion-footer
+      v-if="menuDetailStore.menu"
+      class="detail-footer"
+    >
       <feedback-action-bar
-        :active-feedback="activeFeedback"
+        :feedback="feedbackStore.feedback"
+        :loading="feedbackStore.loading"
+        :saving="feedbackStore.saving"
         @feedback="handleFeedback"
-        @replace="replaceMenu"
       />
     </ion-footer>
 
     <ion-toast
       :is-open="toastOpen"
       :message="toastMessage"
-      :duration="1800"
+      :duration="2200"
       position="top"
       color="dark"
       @did-dismiss="toastOpen = false"
@@ -208,27 +580,36 @@ const replaceMenu = () => {
   min-height: 100%;
 }
 
+.detail-footer {
+  box-shadow: none;
+}
+
 .hero {
-  height: 285px;
+  height: 238px;
   overflow: hidden;
   position: relative;
 }
 
-.hero__image,
-.hero__fallback {
+.hero__pattern {
+  align-items: center;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.72), transparent 20%),
+    radial-gradient(circle at 85% 75%, rgba(244, 184, 96, 0.3), transparent 27%),
+    linear-gradient(145deg, #cfe5d8, #efe5cf);
+  display: flex;
   height: 100%;
-  object-fit: cover;
-  width: 100%;
+  justify-content: center;
 }
 
-.hero__fallback {
-  background: linear-gradient(135deg, #dcebe2, #f4e1c4);
+.hero__pattern ion-icon {
+  color: rgba(33, 107, 78, 0.42);
+  font-size: 4.2rem;
 }
 
 .hero__shade {
   background:
-    linear-gradient(180deg, rgba(12, 25, 19, 0.45) 0%, transparent 36%),
-    linear-gradient(0deg, rgba(12, 25, 19, 0.3) 0%, transparent 35%);
+    linear-gradient(180deg, rgba(12, 25, 19, 0.38) 0%, transparent 38%),
+    linear-gradient(0deg, rgba(12, 25, 19, 0.25) 0%, transparent 36%);
   inset: 0;
   position: absolute;
 }
@@ -255,16 +636,16 @@ const replaceMenu = () => {
   font-size: 1.25rem;
 }
 
-.hero__recommendation-badge {
+.hero__badge {
   align-items: center;
   backdrop-filter: blur(10px);
-  background: rgba(23, 35, 30, 0.76);
+  background: rgba(23, 35, 30, 0.79);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--app-radius-pill);
   bottom: var(--app-space-6);
   color: #ffffff;
   display: flex;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 800;
   gap: 6px;
   left: var(--app-space-5);
@@ -272,7 +653,7 @@ const replaceMenu = () => {
   position: absolute;
 }
 
-.hero__recommendation-badge ion-icon {
+.hero__badge ion-icon {
   color: #f7bd62;
   font-size: 0.9rem;
 }
@@ -315,71 +696,106 @@ const replaceMenu = () => {
 
 .menu-heading > p {
   color: var(--app-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   line-height: 1.55;
   margin: 0;
 }
 
-.menu-meta {
+.serving-card {
   align-items: center;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-md);
+  display: grid;
+  gap: var(--app-space-3);
+  grid-template-columns: auto 1fr auto;
+  margin-top: var(--app-space-4);
+  padding: var(--app-space-3);
+}
+
+.serving-card > ion-icon {
+  color: var(--ion-color-primary);
+  font-size: 1.25rem;
+}
+
+.serving-card div {
+  display: grid;
+  gap: 2px;
+}
+
+.serving-card span {
   color: var(--app-text-muted);
+  font-size: 0.55rem;
+}
+
+.serving-card strong,
+.serving-card b {
+  color: var(--app-text);
+  font-size: 0.68rem;
+}
+
+.serving-card b {
+  background: var(--app-primary-soft);
+  border-radius: var(--app-radius-pill);
+  color: var(--ion-color-primary);
+  padding: 6px 8px;
+}
+
+.tag-list {
   display: flex;
   flex-wrap: wrap;
-  font-size: 0.65rem;
-  gap: 7px;
+  gap: 6px;
   margin-top: var(--app-space-3);
 }
 
-.menu-meta span {
-  align-items: center;
-  display: inline-flex;
-  gap: 4px;
+.tag-list span {
+  background: var(--app-surface-soft);
+  border-radius: var(--app-radius-pill);
+  color: var(--app-text-muted);
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 5px 8px;
 }
 
-.menu-meta ion-icon {
-  color: var(--ion-color-primary);
-  font-size: 0.85rem;
-}
-
-.explanation-card {
-  align-items: flex-start;
+.recommendation-detail {
   background:
-    radial-gradient(circle at 100% 0%, rgba(240, 168, 75, 0.18), transparent 32%),
+    radial-gradient(circle at 100% 0%, rgba(240, 168, 75, 0.18), transparent 28%),
     var(--app-primary-soft);
   border: 1px solid #c9e3d6;
   border-radius: var(--app-radius-lg);
-  display: flex;
-  gap: var(--app-space-3);
   margin-top: var(--app-space-8);
-  padding: var(--app-space-5);
+  padding: var(--app-space-4);
 }
 
-.explanation-card__icon {
+.recommendation-detail__heading {
+  align-items: center;
+  display: grid;
+  gap: var(--app-space-3);
+  grid-template-columns: auto 1fr auto;
+}
+
+.recommendation-detail__heading > span {
   align-items: center;
   background: var(--ion-color-primary);
-  border-radius: 12px;
+  border-radius: 11px;
   color: #ffffff;
   display: inline-flex;
-  flex: 0 0 40px;
-  height: 40px;
+  height: 38px;
   justify-content: center;
+  width: 38px;
 }
 
-.explanation-card__icon ion-icon {
-  font-size: 1.1rem;
-}
-
-.explanation-card p,
+.recommendation-detail__heading p,
 .content-section__heading p {
   color: var(--ion-color-primary);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 850;
   letter-spacing: 0.08em;
   margin: 0 0 3px;
   text-transform: uppercase;
 }
 
-.explanation-card h2,
+.recommendation-detail__heading h2,
 .content-section__heading h2 {
   color: var(--app-text);
   font-size: 1rem;
@@ -388,17 +804,341 @@ const replaceMenu = () => {
   margin: 0;
 }
 
-.explanation-card blockquote {
-  color: #405149;
-  font-size: 0.76rem;
-  line-height: 1.55;
-  margin: var(--app-space-3) 0 var(--app-space-2);
+.recommendation-detail__heading > strong {
+  color: var(--ion-color-primary);
+  font-size: 1.15rem;
 }
 
-.explanation-card small {
+.recommendation-detail__heading > strong small {
+  color: var(--app-text-muted);
+  display: block;
+  font-size: 0.5rem;
+  text-align: right;
+}
+
+.target-summary {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: var(--app-space-4);
+  overflow: hidden;
+}
+
+.target-summary div {
+  background: rgba(255, 255, 255, 0.62);
+  display: grid;
+  gap: 3px;
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.target-summary div:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+.target-summary div:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.target-summary span {
+  color: var(--app-text-muted);
+  font-size: 0.5rem;
+}
+
+.target-summary strong {
+  color: var(--app-text);
+  font-size: 0.6rem;
+}
+
+.score-breakdown {
+  display: grid;
+  gap: var(--app-space-3);
+  margin-top: var(--app-space-4);
+}
+
+.score-part > div:first-child {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.score-part span,
+.score-part strong {
+  color: var(--app-text-muted);
+  font-size: 0.55rem;
+}
+
+.score-part strong {
+  color: var(--app-text);
+}
+
+.score-bar {
+  background: rgba(33, 107, 78, 0.12);
+  border-radius: var(--app-radius-pill);
+  height: 5px;
+  overflow: hidden;
+}
+
+.score-bar span {
+  background: var(--ion-color-primary);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.reason-list,
+.ingredient-list {
+  display: grid;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.reason-list {
+  gap: 7px;
+  margin-top: var(--app-space-4);
+}
+
+.ai-explanation {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(33, 107, 78, 0.18);
+  border-radius: var(--app-radius-md);
+  margin-top: var(--app-space-4);
+  padding: var(--app-space-3);
+}
+
+.ai-explanation > header {
+  align-items: center;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+.ai-explanation > header > span {
+  align-items: center;
+  background: linear-gradient(145deg, #216b4e, #d69c45);
+  border-radius: 10px;
+  color: #ffffff;
+  display: flex;
+  height: 34px;
+  justify-content: center;
+}
+
+.ai-explanation > header p {
+  color: var(--ion-color-primary);
+  font-size: 0.48rem;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+  margin: 0 0 2px;
+  text-transform: uppercase;
+}
+
+.ai-explanation > header h3 {
+  color: var(--app-text);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.ai-explanation > header b {
+  background: var(--app-primary-soft);
+  border-radius: var(--app-radius-pill);
+  color: var(--ion-color-primary);
+  font-size: 0.5rem;
+  padding: 5px 7px;
+}
+
+.ai-explanation__intro,
+.ai-explanation__state {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: var(--app-space-4) var(--app-space-2) var(--app-space-2);
+  text-align: center;
+}
+
+.ai-explanation__intro > p,
+.ai-explanation__state p {
   color: var(--app-text-muted);
   font-size: 0.58rem;
-  line-height: 1.4;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ai-explanation button {
+  align-items: center;
+  appearance: none;
+  background: var(--ion-color-primary);
+  border: 0;
+  border-radius: var(--app-radius-md);
+  color: #ffffff;
+  display: flex;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 850;
+  gap: 6px;
+  justify-content: center;
+  margin-top: var(--app-space-3);
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.ai-explanation__intro > small {
+  color: var(--app-text-muted);
+  font-size: 0.48rem;
+  line-height: 1.45;
+  margin-top: 7px;
+}
+
+.ai-explanation__state {
+  min-height: 145px;
+  justify-content: center;
+}
+
+.ai-explanation__state > ion-icon,
+.ai-explanation__state ion-spinner {
+  color: var(--ion-color-primary);
+  font-size: 1.6rem;
+  height: 28px;
+  margin-bottom: 9px;
+  width: 28px;
+}
+
+.ai-explanation__state strong {
+  color: var(--app-text);
+  font-size: 0.68rem;
+  margin-bottom: 4px;
+}
+
+.ai-explanation__result {
+  margin-top: var(--app-space-3);
+}
+
+.ai-explanation__result > p {
+  color: var(--app-text);
+  font-size: 0.62rem;
+  font-weight: 650;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.ai-explanation__result ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: var(--app-space-3) 0 0;
+  padding: 0;
+}
+
+.ai-explanation__result li {
+  align-items: flex-start;
+  background: var(--app-surface-soft);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  padding: 8px;
+}
+
+.ai-explanation__result li > span {
+  align-items: center;
+  color: #d29032;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+}
+
+.ai-explanation__result li div {
+  display: grid;
+  gap: 2px;
+}
+
+.ai-explanation__result li strong {
+  color: var(--app-text);
+  font-size: 0.58rem;
+}
+
+.ai-explanation__result li p {
+  color: var(--app-text-muted);
+  font-size: 0.52rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ai-explanation__result aside {
+  align-items: flex-start;
+  background: #fff7e9;
+  border-radius: 9px;
+  color: #7d602f;
+  display: flex;
+  font-size: 0.48rem;
+  gap: 6px;
+  line-height: 1.45;
+  margin-top: var(--app-space-3);
+  padding: 8px;
+}
+
+.ai-explanation__result aside ion-icon {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+}
+
+.ai-explanation__result > small {
+  color: var(--app-text-muted);
+  display: block;
+  font-size: 0.45rem;
+  margin-top: 6px;
+  text-align: right;
+}
+
+.reason-list li {
+  align-items: flex-start;
+  color: #405149;
+  display: flex;
+  font-size: 0.58rem;
+  gap: 7px;
+  line-height: 1.45;
+}
+
+.reason-list li > span,
+.ingredient-list__check {
+  align-items: center;
+  background: rgba(33, 107, 78, 0.13);
+  border-radius: 50%;
+  color: var(--ion-color-primary);
+  display: inline-flex;
+  flex: 0 0 19px;
+  height: 19px;
+  justify-content: center;
+}
+
+.reason-list ion-icon,
+.ingredient-list__check ion-icon {
+  font-size: 0.7rem;
+}
+
+.context-note,
+.source-card,
+.allergen-empty {
+  align-items: flex-start;
+  border-radius: var(--app-radius-md);
+  display: flex;
+  gap: var(--app-space-2);
+  padding: var(--app-space-3);
+}
+
+.context-note {
+  background: #fff5e8;
+  color: #9a5b09;
+  margin-top: var(--app-space-6);
+}
+
+.context-note p,
+.allergen-empty p {
+  color: var(--app-text-muted);
+  font-size: 0.6rem;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .content-section {
@@ -414,87 +1154,202 @@ const replaceMenu = () => {
 
 .content-section__heading > span {
   color: var(--app-text-muted);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
 }
 
 .ingredient-list {
-  display: grid;
   gap: var(--app-space-2);
-  grid-template-columns: repeat(2, 1fr);
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 .ingredient-list li {
-  align-items: center;
-  background: var(--app-surface);
-  border: 1px solid var(--app-border);
-  border-radius: var(--app-radius-md);
-  color: var(--app-text);
-  display: flex;
-  font-size: 0.72rem;
-  font-weight: 700;
-  gap: var(--app-space-2);
-  min-height: 48px;
-  padding: 9px;
-}
-
-.ingredient-list li span {
-  align-items: center;
-  background: var(--app-primary-soft);
-  border-radius: 9px;
-  color: var(--ion-color-primary);
-  display: inline-flex;
-  flex: 0 0 28px;
-  height: 28px;
-  justify-content: center;
-}
-
-.ingredient-list ion-icon {
-  font-size: 0.9rem;
-}
-
-.instruction-list {
-  display: grid;
-  gap: var(--app-space-3);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.instruction-list li {
   align-items: flex-start;
   background: var(--app-surface);
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-md);
-  display: flex;
+  display: grid;
   gap: var(--app-space-3);
-  padding: var(--app-space-4);
+  grid-template-columns: auto 1fr;
+  padding: var(--app-space-3);
 }
 
-.instruction-list li > span {
+.ingredient-list__check {
+  border-radius: 9px;
+  height: 28px;
+  width: 28px;
+}
+
+.ingredient-list li > div {
+  display: grid;
+  gap: 3px;
+}
+
+.ingredient-list strong {
+  color: var(--app-text);
+  font-size: 0.7rem;
+}
+
+.ingredient-list p {
+  color: var(--ion-color-primary);
+  font-size: 0.58rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ingredient-list small {
+  color: var(--app-text-muted);
+  font-size: 0.53rem;
+  line-height: 1.4;
+}
+
+.allergen-list {
+  display: grid;
+  gap: var(--app-space-2);
+}
+
+.allergen-list article {
+  align-items: flex-start;
+  background: #fff4ed;
+  border: 1px solid #f2d3c2;
+  border-radius: var(--app-radius-md);
+  color: #a34829;
+  display: flex;
+  gap: var(--app-space-2);
+  padding: var(--app-space-3);
+}
+
+.allergen-list article > ion-icon {
+  flex: 0 0 auto;
+  font-size: 1rem;
+}
+
+.allergen-list strong {
+  color: #87391f;
+  font-size: 0.67rem;
+}
+
+.allergen-list p {
+  color: #76584d;
+  font-size: 0.56rem;
+  line-height: 1.45;
+  margin: 3px 0 0;
+}
+
+.allergen-empty {
+  background: var(--app-primary-soft);
+  color: var(--ion-color-primary);
+}
+
+.source-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  color: var(--ion-color-primary);
+  margin-top: var(--app-space-8);
+}
+
+.source-card > ion-icon {
+  flex: 0 0 auto;
+  font-size: 1.15rem;
+}
+
+.source-card div {
+  display: grid;
+  gap: 3px;
+}
+
+.source-card span,
+.source-card small {
+  color: var(--app-text-muted);
+  font-size: 0.54rem;
+}
+
+.source-card strong {
+  color: var(--app-text);
+  font-size: 0.65rem;
+}
+
+.page-status {
   align-items: center;
-  background: var(--ion-color-primary);
-  border-radius: 10px;
-  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  padding: calc(var(--app-space-5) + env(safe-area-inset-top));
+  text-align: center;
+}
+
+.page-status .back-button {
+  left: var(--app-space-5);
+  position: absolute;
+  top: calc(var(--app-space-5) + env(safe-area-inset-top));
+}
+
+.page-status ion-spinner {
+  color: var(--ion-color-primary);
+  height: 36px;
+  margin-bottom: var(--app-space-3);
+  width: 36px;
+}
+
+.page-status__icon {
+  align-items: center;
+  background: #fff0e8;
+  border-radius: 50%;
+  color: #b7512d;
   display: inline-flex;
-  flex: 0 0 30px;
-  font-size: 0.72rem;
+  height: 54px;
+  justify-content: center;
+  margin-bottom: var(--app-space-3);
+  width: 54px;
+}
+
+.page-status__icon ion-icon {
+  font-size: 1.5rem;
+}
+
+.page-status h1 {
+  color: var(--app-text);
+  font-size: 1.25rem;
   font-weight: 850;
-  height: 30px;
+  margin: 0;
+}
+
+.page-status > p {
+  color: var(--app-text-muted);
+  font-size: 0.68rem;
+  line-height: 1.55;
+  margin: 8px 0 0;
+  max-width: 300px;
+}
+
+.back-button,
+.retry-button {
+  align-items: center;
+  appearance: none;
+  border-radius: var(--app-radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 800;
+  gap: 5px;
   justify-content: center;
 }
 
-.instruction-list p {
-  color: var(--app-text-muted);
-  font-size: 0.74rem;
-  line-height: 1.55;
-  margin: 4px 0 0;
+.back-button {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  min-height: 36px;
+  padding: 0 12px;
 }
 
-.detail-footer {
-  box-shadow: none;
+.retry-button {
+  background: var(--ion-color-primary);
+  border: 0;
+  color: #ffffff;
+  margin-top: var(--app-space-4);
+  min-height: 40px;
+  padding: 0 16px;
 }
 </style>

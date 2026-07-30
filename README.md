@@ -1,16 +1,20 @@
 # AI Food Recommendation
 
-Demo antarmuka aplikasi mobile rekomendasi makanan harian berdasarkan profil,
-target kalori, dan preferensi pengguna. Aplikasi dibangun menggunakan Ionic Vue
-dan TypeScript sebagai bagian dari tugas akhir kuliah.
+Prototipe aplikasi mobile rekomendasi makanan harian berdasarkan profil, target
+kalori, dan preferensi pengguna. Aplikasi Ionic Vue telah terhubung ke backend
+Express dan SQLite untuk autentikasi serta profil pengguna.
 
 > [!NOTE]
-> Proyek saat ini berada pada tahap **demo UI** untuk dokumentasi dan screenshot
-> laporan. Seluruh informasi pengguna, rekomendasi makanan, serta interaksi di
-> dalam aplikasi masih menggunakan data dummy lokal. Backend, autentikasi nyata,
-> database, dan recommendation engine akan dikembangkan pada tahap berikutnya.
+> Registrasi, login, sesi, dan profil pengguna sudah terintegrasi dengan API.
+> Backend katalog menu, perhitungan kalori, dan recommendation engine versi
+> pertama sudah tersedia. Halaman rekomendasi harian dan detail menu Ionic
+> sudah memakai API. Pencarian dan pemilihan menu pengganti juga sudah
+> terintegrasi dan dipersistenkan sebagai snapshot SQLite yang mendukung
+> riwayat. Feedback suka, tidak suka, dan konsumsi juga sudah persisten.
+> Detail rekomendasi memiliki Penjelasan AI melalui OpenRouter; beranda masih
+> memakai data dummy selama integrasi bertahap.
 
-## Fitur demo
+## Fitur aplikasi
 
 - Login dan registrasi pengguna
 - Pengaturan, tampilan, dan penyuntingan profil
@@ -18,7 +22,10 @@ dan TypeScript sebagai bagian dari tugas akhir kuliah.
 - Rekomendasi menu harian
 - Detail makanan dan informasi makronutrisi
 - Pilihan alternatif dan penggantian menu
+- Asisten AI untuk menerjemahkan permintaan penggantian menjadi filter bahan
+- Rencana otomatis dan ringkasan menu tujuh hari tanpa pengulangan
 - Feedback suka, tidak suka, dan sudah dikonsumsi
+- Penjelasan AI sesuai profil, target, nilai gizi, dan skor rekomendasi
 - Loading, empty, dan error state
 - Navigasi mobile dengan bottom navigation
 
@@ -62,6 +69,8 @@ dan TypeScript sebagai bagian dari tugas akhir kuliah.
 
 ## Teknologi
 
+### Aplikasi mobile
+
 - Ionic Framework 8
 - Vue 3
 - TypeScript
@@ -70,18 +79,80 @@ dan TypeScript sebagai bagian dari tugas akhir kuliah.
 - Capacitor
 - Vite
 
+### Backend dan target deployment
+
+- Express.js, Node.js, dan TypeScript untuk backend
+- SQLite sebagai database sementara
+- Autentikasi email dan kata sandi melalui backend, tanpa login Google
+- API profil pengguna terproteksi untuk data tubuh, tujuan, alergi, dan
+  preferensi
+- Perhitungan BMR, TDEE, target sesuai tujuan, dan pembagian kalori per waktu
+  makan dari profil pengguna
+- Recommendation engine harian dengan filter alergi/dislike, skor preferensi
+  dan kalori, alasan terstruktur, serta pencegahan menu berulang
+- Katalog 1.145 pangan TKPI 2017 serta 614 menu yang seluruhnya telah
+  disetujui; target minimum 600 menu approved telah terlampaui dan duplikat
+  nama maupun komposisi ditolak oleh database
+- API katalog menu approved dengan pencarian, filter kalori/jenis makan,
+  pagination, dan detail nilai gizi
+- Caddy sebagai reverse proxy dan pengelola HTTPS saat deployment
+- OpenRouter API hanya untuk menyusun penjelasan hasil rekomendasi; angka gizi
+  dan keputusan filter tetap berasal dari backend
+
 ## Menjalankan aplikasi
 
-Pastikan Node.js dan npm sudah tersedia, kemudian jalankan:
+Pastikan Node.js 22 dan npm sudah tersedia. Untuk menjalankan backend dan
+frontend secara otomatis dari root proyek:
+
+```bash
+npm run dev
+```
+
+Perintah tersebut akan:
+
+- membuat `backend/.env` dan `mobile/.env` dari contoh jika belum tersedia;
+- menjalankan `npm install` hanya jika dependency suatu aplikasi belum ada;
+- menjalankan migration SQLite;
+- memulai backend pada `http://localhost:3000`;
+- memulai Ionic pada `http://localhost:5173`;
+- memeriksa readiness kedua aplikasi; dan
+- menghentikan kedua proses saat `Ctrl+C` ditekan.
+
+Jika hanya ingin menyiapkan dependency, environment, dan database:
+
+```bash
+npm run dev:setup
+```
+
+Port frontend dapat diubah sementara, misalnya
+`LOCAL_FRONTEND_PORT=5174 npm run dev`. Pastikan nilai `CORS_ORIGINS` backend
+juga mengizinkan origin tersebut.
+
+Cara manual tetap tersedia:
+
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm run db:migrate
+npm run dev
+```
+
+Pada terminal lain:
 
 ```bash
 cd mobile
 npm install
+cp .env.example .env
 npm run dev
 ```
 
 Buka alamat yang ditampilkan oleh Vite pada browser. Route utama aplikasi
 adalah `/app/home`.
+
+Endpoint pemeriksaan API dan SQLite tersedia pada
+`http://localhost:3000/api/v1/health`. Dokumentasi backend selengkapnya tersedia
+di [`backend/README.md`](backend/README.md).
 
 ## Validasi proyek
 
@@ -90,6 +161,7 @@ cd mobile
 npm run build
 npm run lint
 npm run test:unit -- --run
+npm run test:e2e
 ```
 
 ## Struktur proyek
@@ -107,8 +179,8 @@ npm run test:unit -- --run
 
 | Tahap | Status | Cakupan |
 | --- | --- | --- |
-| Demo UI | Sedang dikembangkan | Halaman aplikasi, dummy data, interaksi visual, dan screenshot |
-| Integrated MVP | Berikutnya | Backend, autentikasi, database, recommendation engine, dan integrasi API |
+| Demo UI | Tersedia | Beranda dan screenshot |
+| Integrated MVP | Sedang dikembangkan | Backend, SQLite, autentikasi, profil, kalkulasi kalori, recommendation engine v1, snapshot dan riwayat rekomendasi, alternatif pengganti, feedback persisten, halaman rekomendasi dan detail menu Ionic, API katalog, serta 614 menu approved tersedia; target minimum 600 telah dilampaui sebanyak 14 menu |
 | Pengembangan lanjutan | Direncanakan | Penyempurnaan fitur, pengujian, keamanan, dan deployment |
 
 Proyek ini bersifat edukatif dan tidak ditujukan untuk memberikan diagnosis

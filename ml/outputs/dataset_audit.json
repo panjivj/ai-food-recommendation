@@ -1,0 +1,219 @@
+{
+  "generated_at_utc": "2026-07-29T15:16:35.950799+00:00",
+  "source": {
+    "database": "backend/storage/app.db",
+    "database_sha256": "2d4780c177e3645131c988e884a99105e48471794f0ccd69900ac6a2b4f84747",
+    "selection": "menus with curation_status = approved",
+    "nutrition_sources": [
+      "Tabel Komposisi Pangan Indonesia 2017"
+    ],
+    "calculation_versions": [
+      "tkpi-weighted-v1"
+    ],
+    "curation_batch_distribution": {
+      "1": 14,
+      "2": 60,
+      "3": 60,
+      "4": 60,
+      "5": 60,
+      "6": 60,
+      "7": 60,
+      "8": 60,
+      "9": 60,
+      "10": 60,
+      "11": 60
+    }
+  },
+  "export": {
+    "dataset": "ml/data/menu_ml.csv",
+    "dataset_sha256": "af47859002d6c0bf282c88762d852076113cb729d6621bdd9ec2c50ddf8fbfa6",
+    "columns": [
+      "menu_id",
+      "menu_name",
+      "serving_size_g",
+      "energy_kcal",
+      "protein_g",
+      "fat_g",
+      "carbohydrate_g",
+      "fiber_g",
+      "sodium_mg",
+      "meal_type"
+    ],
+    "metadata_columns_not_for_model": [
+      "menu_id",
+      "menu_name"
+    ],
+    "feature_columns": [
+      "serving_size_g",
+      "energy_kcal",
+      "protein_g",
+      "fat_g",
+      "carbohydrate_g",
+      "fiber_g",
+      "sodium_mg"
+    ],
+    "target_column": "meal_type"
+  },
+  "row_count": 614,
+  "column_count": 10,
+  "class_distribution": {
+    "breakfast": {
+      "count": 153,
+      "percent": 24.9186
+    },
+    "lunch": {
+      "count": 185,
+      "percent": 30.1303
+    },
+    "dinner": {
+      "count": 184,
+      "percent": 29.9674
+    },
+    "snack": {
+      "count": 92,
+      "percent": 14.9837
+    }
+  },
+  "integrity": {
+    "unique_menu_ids": 614,
+    "unique_normalized_names": 614,
+    "duplicate_menu_ids": 0,
+    "duplicate_normalized_names": 0,
+    "duplicate_feature_and_target_rows": 0,
+    "duplicate_feature_rows_across_any_target": 0,
+    "unexpected_classes": [],
+    "missing_expected_classes": [],
+    "invalid_nonfinite_values": {
+      "serving_size_g": 0,
+      "energy_kcal": 0,
+      "protein_g": 0,
+      "fat_g": 0,
+      "carbohydrate_g": 0,
+      "fiber_g": 0,
+      "sodium_mg": 0
+    },
+    "invalid_negative_values": {
+      "serving_size_g": 0,
+      "energy_kcal": 0,
+      "protein_g": 0,
+      "fat_g": 0,
+      "carbohydrate_g": 0,
+      "fiber_g": 0,
+      "sodium_mg": 0
+    },
+    "invalid_serving_size_count": 0
+  },
+  "numeric_summary": {
+    "serving_size_g": {
+      "count": 614,
+      "missing": 0,
+      "missing_percent": 0.0,
+      "minimum": 130.0,
+      "q1": 330.0,
+      "median": 497.5,
+      "mean": 418.607492,
+      "q3": 510.0,
+      "maximum": 525.0,
+      "iqr_lower_bound": 60.0,
+      "iqr_upper_bound": 780.0,
+      "iqr_outlier_count": 0,
+      "iqr_outlier_percent": 0.0
+    },
+    "energy_kcal": {
+      "count": 614,
+      "missing": 0,
+      "missing_percent": 0.0,
+      "minimum": 104.4,
+      "q1": 329.4,
+      "median": 432.65,
+      "mean": 407.35,
+      "q3": 504.225,
+      "maximum": 637.25,
+      "iqr_lower_bound": 67.1625,
+      "iqr_upper_bound": 766.4625,
+      "iqr_outlier_count": 0,
+      "iqr_outlier_percent": 0.0
+    },
+    "protein_g": {
+      "count": 614,
+      "missing": 0,
+      "missing_percent": 0.0,
+      "minimum": 1.2,
+      "q1": 10.815,
+      "median": 19.5175,
+      "mean": 19.096702,
+      "q3": 25.4325,
+      "maximum": 48.74,
+      "iqr_lower_bound": -11.11125,
+      "iqr_upper_bound": 47.35875,
+      "iqr_outlier_count": 3,
+      "iqr_outlier_percent": 0.4886
+    },
+    "fat_g": {
+      "count": 614,
+      "missing": 0,
+      "missing_percent": 0.0,
+      "minimum": 0.28,
+      "q1": 1.965,
+      "median": 5.5,
+      "mean": 6.741246,
+      "q3": 9.8175,
+      "maximum": 34.06,
+      "iqr_lower_bound": -9.81375,
+      "iqr_upper_bound": 21.59625,
+      "iqr_outlier_count": 10,
+      "iqr_outlier_percent": 1.6287
+    },
+    "carbohydrate_g": {
+      "count": 614,
+      "missing": 0,
+      "missing_percent": 0.0,
+      "minimum": 13.02,
+      "q1": 62.37,
+      "median": 70.925,
+      "mean": 69.854796,
+      "q3": 82.7,
+      "maximum": 121.2,
+      "iqr_lower_bound": 31.875,
+      "iqr_upper_bound": 113.195,
+      "iqr_outlier_count": 53,
+      "iqr_outlier_percent": 8.6319
+    },
+    "fiber_g": {
+      "count": 492,
+      "missing": 122,
+      "missing_percent": 19.8697,
+      "minimum": 0.6,
+      "q1": 4.0075,
+      "median": 6.03,
+      "mean": 7.20187,
+      "q3": 8.955,
+      "maximum": 27.07,
+      "iqr_lower_bound": -3.41375,
+      "iqr_upper_bound": 16.37625,
+      "iqr_outlier_count": 21,
+      "iqr_outlier_percent": 4.2683
+    },
+    "sodium_mg": {
+      "count": 614,
+      "missing": 0,
+      "missing_percent": 0.0,
+      "minimum": 2.0,
+      "q1": 31.15,
+      "median": 69.0,
+      "mean": 113.493925,
+      "q3": 164.05,
+      "maximum": 678.45,
+      "iqr_lower_bound": -168.2,
+      "iqr_upper_bound": 363.4,
+      "iqr_outlier_count": 40,
+      "iqr_outlier_percent": 6.5147
+    }
+  },
+  "warnings": [
+    "menu_id dan menu_name merupakan metadata keterlacakan dan tidak boleh digunakan sebagai fitur model.",
+    "Outlier IQR merupakan kandidat pemeriksaan domain, bukan instruksi penghapusan otomatis; variasi gizi yang valid dapat memiliki nilai ekstrem.",
+    "Label meal_type berasal dari kurasi menu, bukan perilaku pengguna yang diamati, sehingga klaim personalisasi harus dibatasi.",
+    "Distribusi fitur dapat mencerminkan aturan pembentukan menu terkurasi; risiko leakage dan keterbatasan generalisasi harus dibahas."
+  ]
+}

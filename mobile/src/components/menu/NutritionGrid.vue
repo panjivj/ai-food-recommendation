@@ -1,41 +1,97 @@
 <script setup lang="ts">
-import type { Nutrition } from '@/types/domain'
+import { computed } from 'vue'
+import type { MenuNutritionDetail } from '@/types/domain'
 
-defineProps<{
-  nutrition: Nutrition
+const props = defineProps<{
+  nutrition: MenuNutritionDetail
 }>()
+
+interface NutritionDisplayItem {
+  key: keyof MenuNutritionDetail
+  label: string
+  unit: string
+}
+
+const primaryItems: NutritionDisplayItem[] = [
+  { key: 'energyKcal', label: 'Energy', unit: 'kcal' },
+  { key: 'proteinG', label: 'Protein', unit: 'g' },
+  { key: 'carbohydrateG', label: 'Carbohydrate', unit: 'g' },
+  { key: 'fatG', label: 'Fat', unit: 'g' },
+  { key: 'fiberG', label: 'Fiber', unit: 'g' },
+  { key: 'waterG', label: 'Water', unit: 'g' },
+]
+
+const detailItems: NutritionDisplayItem[] = [
+  { key: 'ashG', label: 'Ash', unit: 'g' },
+  { key: 'calciumMg', label: 'Calcium', unit: 'mg' },
+  { key: 'phosphorusMg', label: 'Phosphorus', unit: 'mg' },
+  { key: 'ironMg', label: 'Iron', unit: 'mg' },
+  { key: 'sodiumMg', label: 'Sodium', unit: 'mg' },
+  { key: 'potassiumMg', label: 'Potassium', unit: 'mg' },
+  { key: 'copperMg', label: 'Copper', unit: 'mg' },
+  { key: 'zincMg', label: 'Zinc', unit: 'mg' },
+  { key: 'retinolMcg', label: 'Retinol', unit: 'mcg' },
+  { key: 'betaCaroteneMcg', label: 'Beta-carotene', unit: 'mcg' },
+  { key: 'totalCaroteneMcg', label: 'Total carotene', unit: 'mcg' },
+  { key: 'thiaminMg', label: 'Vitamin B1 (Thiamine)', unit: 'mg' },
+  { key: 'riboflavinMg', label: 'Vitamin B2 (Riboflavin)', unit: 'mg' },
+  { key: 'niacinMg', label: 'Vitamin B3 (Niacin)', unit: 'mg' },
+  { key: 'vitaminCMg', label: 'Vitamin C', unit: 'mg' },
+]
+
+const formattedPrimaryItems = computed(() =>
+  primaryItems.map((item) => ({
+    ...item,
+    value: formatValue(props.nutrition[item.key]),
+  })),
+)
+
+const formattedDetailItems = computed(() =>
+  detailItems.map((item) => ({
+    ...item,
+    value: formatValue(props.nutrition[item.key]),
+  })),
+)
+
+function formatValue(value: number | null): string {
+  return value === null
+    ? '—'
+    : value.toLocaleString('id-ID', { maximumFractionDigits: 2 })
+}
 </script>
 
 <template>
   <section class="nutrition-section" aria-labelledby="nutrition-title">
     <div class="section-heading">
       <div>
-        <p>Informasi gizi</p>
-        <h2 id="nutrition-title">Nutrisi per porsi</h2>
+        <p>Nutrition information</p>
+        <h2 id="nutrition-title">Nutrition per serving</h2>
       </div>
-      <span>Estimasi</span>
+      <span>Curated data</span>
     </div>
 
-    <div class="nutrition-grid">
-      <article class="nutrition-item nutrition-item--calories">
-        <span>Kalori</span>
-        <strong>{{ nutrition.calories }}</strong>
-        <small>kkal</small>
+    <div class="nutrition-grid nutrition-grid--primary">
+      <article
+        v-for="item in formattedPrimaryItems"
+        :key="item.key"
+        class="nutrition-item"
+        :class="{ 'nutrition-item--energy': item.key === 'energyKcal' }"
+      >
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+        <small>{{ item.value === '—' ? 'unavailable' : item.unit }}</small>
       </article>
-      <article class="nutrition-item">
-        <span>Protein</span>
-        <strong>{{ nutrition.proteinG }}</strong>
-        <small>gram</small>
-      </article>
-      <article class="nutrition-item">
-        <span>Karbo</span>
-        <strong>{{ nutrition.carbohydrateG }}</strong>
-        <small>gram</small>
-      </article>
-      <article class="nutrition-item">
-        <span>Lemak</span>
-        <strong>{{ nutrition.fatG }}</strong>
-        <small>gram</small>
+    </div>
+
+    <h3>Minerals &amp; vitamins</h3>
+    <div class="nutrition-grid nutrition-grid--detail">
+      <article
+        v-for="item in formattedDetailItems"
+        :key="item.key"
+        class="nutrition-detail"
+      >
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }} <small v-if="item.value !== '—'">{{ item.unit }}</small></strong>
       </article>
     </div>
   </section>
@@ -70,7 +126,7 @@ defineProps<{
   background: var(--app-surface-soft);
   border-radius: var(--app-radius-pill);
   color: var(--app-text-muted);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 750;
   padding: 6px 9px;
 }
@@ -78,7 +134,10 @@ defineProps<{
 .nutrition-grid {
   display: grid;
   gap: var(--app-space-2);
-  grid-template-columns: repeat(4, 1fr);
+}
+
+.nutrition-grid--primary {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .nutrition-item {
@@ -91,31 +150,77 @@ defineProps<{
   text-align: center;
 }
 
-.nutrition-item--calories {
+.nutrition-item--energy {
   background: var(--app-primary-soft);
   border-color: #c8e4d5;
 }
 
-.nutrition-item span {
+.nutrition-item > span {
   color: var(--app-text-muted);
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 700;
 }
 
 .nutrition-item strong {
   color: var(--app-text);
-  font-size: 1.2rem;
+  font-size: 1.12rem;
   letter-spacing: -0.04em;
   line-height: 1;
   margin: 7px 0 4px;
 }
 
-.nutrition-item--calories strong {
+.nutrition-item--energy strong {
   color: var(--ion-color-primary);
 }
 
-.nutrition-item small {
+.nutrition-item > small {
   color: var(--app-text-muted);
-  font-size: 0.55rem;
+  font-size: 0.52rem;
+}
+
+h3 {
+  color: var(--app-text);
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin: var(--app-space-5) 0 var(--app-space-3);
+}
+
+.nutrition-grid--detail {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.nutrition-detail {
+  align-items: center;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 9px 10px;
+}
+
+.nutrition-detail > span {
+  color: var(--app-text-muted);
+  font-size: 0.56rem;
+}
+
+.nutrition-detail strong {
+  color: var(--app-text);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.nutrition-detail small {
+  color: var(--app-text-muted);
+  font-size: 0.5rem;
+  font-weight: 650;
+}
+
+@media (max-width: 360px) {
+  .nutrition-grid--primary {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>
