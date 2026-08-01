@@ -4,6 +4,34 @@ Prototipe aplikasi mobile rekomendasi makanan harian berdasarkan profil, target
 kalori, dan preferensi pengguna. Aplikasi Ionic Vue telah terhubung ke backend
 Express dan SQLite untuk autentikasi serta profil pengguna.
 
+## Tentang dan tujuan aplikasi
+
+AI Food Recommendation atau **NutriChoice** adalah aplikasi edukatif yang
+membantu pengguna menyusun kandidat menu harian berdasarkan profil tubuh,
+tingkat aktivitas, tujuan berat badan, target kalori, alergi, makanan yang
+tidak disukai, dan preferensi makanan. Aplikasi menyediakan empat slot waktu
+makan, alternatif pengganti, ringkasan tujuh hari, informasi gizi berbasis
+TKPI, serta feedback suka, tidak suka, dan sudah dikonsumsi.
+
+Alur penggunaan utamanya adalah:
+
+1. pengguna membuat akun dan melengkapi profil;
+2. backend menghitung kebutuhan dan target kalori;
+3. recommendation engine menyaring menu yang tidak aman, memberi skor pada
+   kandidat, dan memilih menu untuk setiap waktu makan;
+4. pengguna dapat melihat alasan rekomendasi, mengganti menu, dan memberikan
+   feedback.
+
+Recommendation engine aplikasi menggunakan aturan, filter, dan scoring dari
+profil serta informasi gizi. Eksperimen Decision Tree pada folder `ml/`
+merupakan bagian penelitian untuk mengklasifikasikan waktu makan menu dan
+belum digunakan sebagai pengganti recommendation engine aplikasi. OpenRouter
+bersifat opsional dan hanya menyusun penjelasan berbentuk bahasa alami; angka
+gizi dan keputusan filter tetap dihitung oleh backend.
+
+Aplikasi ini bukan alat diagnosis, terapi, atau pengganti konsultasi dengan
+tenaga kesehatan.
+
 > [!NOTE]
 > Registrasi, login, sesi, dan profil pengguna sudah terintegrasi dengan API.
 > Backend katalog menu, perhitungan kalori, dan recommendation engine versi
@@ -99,10 +127,53 @@ Express dan SQLite untuk autentikasi serta profil pengguna.
 - OpenRouter API hanya untuk menyusun penjelasan hasil rekomendasi; angka gizi
   dan keputusan filter tetap berasal dari backend
 
+## Lokasi dataset
+
+Paket dataset yang siap diperiksa atau disalin untuk kebutuhan pengumpulan
+tersedia di [`data/data-set/`](data/data-set/). Penjelasan skema, jumlah data,
+relasi tabel, sumber, dan pemeriksaan integritas tersedia pada
+[`data/data-set/README.md`](data/data-set/README.md).
+
+| Lokasi | Isi |
+|---|---|
+| [`data/data-set/penelitian/`](data/data-set/penelitian/) | `menu_ml.csv` berisi 614 menu serta `train.csv` dan `test.csv` hasil stratified split |
+| [`data/data-set/aplikasi/`](data/data-set/aplikasi/) | Ekspor CSV katalog 1.145 bahan pangan, 614 menu approved, kandungan gizi, bahan menu, tag, dan alergen |
+| [`data/data-set/sumber-tkpi/`](data/data-set/sumber-tkpi/) | Dokumen Tabel Komposisi Pangan Indonesia 2017 dan 12 berkas JSON hasil normalisasi |
+| [`ml/data/`](ml/data/) | Salinan kerja dataset yang digunakan langsung oleh pipeline eksperimen machine learning |
+
+Paket pada `data/data-set/` tidak memuat akun, alamat surel pengguna, password
+hash, profil kesehatan pengguna, token, feedback personal, atau riwayat
+rekomendasi. Integritas seluruh berkas dapat diperiksa dari dalam folder
+tersebut menggunakan:
+
+```bash
+cd data/data-set
+sha256sum --check SHA256SUMS.txt
+```
+
 ## Menjalankan aplikasi
 
-Pastikan Node.js 22 dan npm sudah tersedia. Untuk menjalankan backend dan
-frontend secara otomatis dari root proyek:
+### Prasyarat
+
+- Node.js 22 atau lebih baru;
+- npm dan Git;
+- port `3000` dan `5173` tidak sedang digunakan.
+
+OpenRouter API key tidak wajib. Tanpa API key, seluruh fungsi utama tetap dapat
+digunakan kecuali pembuatan penjelasan AI berbentuk bahasa alami.
+
+### Quick start
+
+Clone repositori dan masuk ke root proyek:
+
+```bash
+git clone https://github.com/panjivj/ai-food-recommendation.git
+cd ai-food-recommendation
+```
+
+Jika database lokal sudah diinisialisasi dan berisi katalog, jalankan backend
+dan frontend secara otomatis. Untuk clone baru, selesaikan bagian
+**Inisialisasi katalog pada clone baru** di bawah terlebih dahulu.
 
 ```bash
 npm run dev
@@ -118,11 +189,62 @@ Perintah tersebut akan:
 - memeriksa readiness kedua aplikasi; dan
 - menghentikan kedua proses saat `Ctrl+C` ditekan.
 
-Jika hanya ingin menyiapkan dependency, environment, dan database:
+Setelah pesan `Aplikasi lokal berjalan` muncul, buka
+`http://localhost:5173`. Buat akun melalui halaman registrasi, lengkapi profil,
+kemudian buka halaman rekomendasi. Endpoint pemeriksaan backend dan SQLite
+tersedia pada `http://localhost:3000/api/v1/health`.
+
+### Inisialisasi katalog pada clone baru
+
+Database SQLite berada di `backend/storage/app.db` dan tidak disimpan di Git.
+Pada clone baru, siapkan dependency, environment, dan migration terlebih
+dahulu:
 
 ```bash
 npm run dev:setup
 ```
+
+Kemudian impor katalog TKPI dan kurasi seluruh batch menu:
+
+```bash
+cd backend
+npm run db:import-tkpi
+npm run db:seed-pilot
+npm run db:review-pilot
+npm run db:seed-batch-02
+npm run db:review-batch-02
+npm run db:seed-batch-03
+npm run db:review-batch-03
+npm run db:seed-batch-04
+npm run db:review-batch-04
+npm run db:seed-batch-05
+npm run db:review-batch-05
+npm run db:seed-batch-06
+npm run db:review-batch-06
+npm run db:seed-batch-07
+npm run db:review-batch-07
+npm run db:seed-batch-08
+npm run db:review-batch-08
+npm run db:seed-batch-09
+npm run db:review-batch-09
+npm run db:seed-batch-10
+npm run db:review-batch-10
+npm run db:seed-batch-11
+npm run db:review-batch-11
+npm run db:validate-foods
+cd ..
+npm run dev
+```
+
+Tahap inisialisasi katalog hanya diperlukan sekali untuk database lokal baru.
+Hasil akhirnya adalah katalog 1.145 bahan pangan dan 614 menu berstatus
+`approved`. Perintah seed dan review aman dijalankan kembali terhadap menu
+yang sudah disetujui.
+
+Jika database lokal sebelumnya sudah berisi katalog dan menu, cukup jalankan
+`npm run dev`.
+
+### Konfigurasi dan cara manual
 
 Port frontend dapat diubah sementara, misalnya
 `LOCAL_FRONTEND_PORT=5174 npm run dev`. Pastikan nilai `CORS_ORIGINS` backend
@@ -150,9 +272,9 @@ npm run dev
 Buka alamat yang ditampilkan oleh Vite pada browser. Route utama aplikasi
 adalah `/app/home`.
 
-Endpoint pemeriksaan API dan SQLite tersedia pada
-`http://localhost:3000/api/v1/health`. Dokumentasi backend selengkapnya tersedia
-di [`backend/README.md`](backend/README.md).
+Dokumentasi backend selengkapnya tersedia di
+[`backend/README.md`](backend/README.md), sedangkan petunjuk khusus frontend
+tersedia di [`mobile/README.md`](mobile/README.md).
 
 ## Validasi proyek
 
@@ -168,9 +290,13 @@ npm run test:e2e
 
 ```text
 .
+├── backend/       # REST API, SQLite, katalog TKPI, dan recommendation engine
+├── data/          # Sumber TKPI dan paket dataset siap submit
 ├── laporan/       # Draft dan referensi laporan tugas akhir
+├── ml/            # Dataset kerja, pipeline eksperimen, model, dan hasil
 ├── mobile/        # Source code aplikasi Ionic Vue
 ├── screenshoots/  # Hasil screenshot antarmuka
+├── scripts/       # Orkestrasi setup dan aplikasi lokal
 ├── plan.md        # Rencana dan tahapan pengembangan
 └── README.md
 ```

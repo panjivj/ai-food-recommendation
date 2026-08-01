@@ -66,6 +66,9 @@ UserInterfaceState.xcuserstate
 
 laporan/*.pdf
 laporan/*.md
+# Private local prompts; never upload to the repository.
+laporan/prompt-generate-document.md
+laporan/prompt-generate-ducument.md
 !laporan/draft-laporan.md
 !laporan/lampiran-A.md
 !laporan/lampiran-B.md
